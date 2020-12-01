@@ -18,6 +18,10 @@ Se deberia crear una rama por cada ticket a realizar.
 
 NOMENCLATURA 
 
-feature/CMS-X(Numero de ticket del Kanban)-nombre(funcionalidad del ticket)
+style/ : si es algo de diseño
+bugfix/ : resolucion de errores
+feature/ : nuevo desarrollo
+
+Ejemplo: feature/CMS-X(Numero de ticket del Kanban)-nombre(funcionalidad del ticket)
 
 Los espacios se separan por -
