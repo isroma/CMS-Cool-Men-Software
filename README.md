@@ -25,3 +25,13 @@ Se deberia crear una rama por cada ticket a realizar.
 Ejemplo: feature/CMS-X(Numero de ticket del Kanban)-nombre(funcionalidad del ticket)
 
 Los espacios se separan por -
+
+**Tecnologias**
+- Acceder y Leer contenidos: SwiftStack
+- Busqueda de archivos: SwiftStack
+- Balanceo de carga: Nginx
+- Gestion de usuarios: SwiftStack + Django 
+- Web: Django
+
+**URLS utiles**
+- https://meet.google.com/linkredirect?authuser=0&dest=https%3A%2F%2Fwww.nginx.com%2Fblog%2Fmaximizing-python-performance-with-nginx-parti-web-serving-and-caching%2F
