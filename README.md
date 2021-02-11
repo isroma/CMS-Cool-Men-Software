@@ -6,17 +6,18 @@
   5. Comprobar los cambios y mergear la rama desde el Git
 
 # Cómo actualizar una rama
+```console
   1. git fetch
   2. git checkout develop
   3. git pull
   4. git checkout "tu rama"
   5. git merge develop
-  
-  https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
-
+```
 **Todas las ramas se tienen que crear de *develop***
 
 Se deberia crear una rama por cada ticket a realizar.
+
+https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
 
 # Nomenclatura de ramas
 
