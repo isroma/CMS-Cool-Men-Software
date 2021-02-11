@@ -11,6 +11,8 @@
   3. git pull
   4. git checkout "tu rama"
   5. git merge main "tu rama"
+  
+  https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
 
 **NUNCA trabajar directamente sobre *main***
 
