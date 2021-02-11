@@ -25,8 +25,14 @@ Se deberia crear una rama por cada ticket a realizar.
 - feature/ : nuevo desarrollo
 
 Ejemplo: feature/CMS-X(Numero de ticket del Kanban)-nombre(funcionalidad del ticket)
+         feature/CMS-0-ejemplo-de-rama
 
 Los espacios se separan por -
+
+**Nomenclatura de Pull requests**
+
+La PR mantiene el nombre del commit por lo que no hay que modifciarlo pero se debe dar una breve explicación de la funcionalidad, cambio
+o ajuste que aporta esa PR
 
 **Tecnologias**
 - Acceder y Leer contenidos: SwiftStack
