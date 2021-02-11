@@ -7,18 +7,18 @@
 
 **Cómo actualizar una rama**
   1. git fetch
-  2. git checkout main
+  2. git checkout develop
   3. git pull
   4. git checkout "tu rama"
-  5. git merge main "tu rama"
+  5. git merge develop
   
   https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
 
-**NUNCA trabajar directamente sobre *main***
+**Todas las ramas se tienen que crear de *develop***
 
 Se deberia crear una rama por cada ticket a realizar.
 
-**Nomenclatura**
+**Nomenclatura de ramas**
 
 - style/ : si es algo de diseño
 - bugfix/ : resolucion de errores
