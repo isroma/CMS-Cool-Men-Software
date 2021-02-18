@@ -1,4 +1,4 @@
-**Proceso de trabajo**
+# Proceso de trabajo
   1. Crear una rama apartir de develop
   2. Hacemos un PULL de la rama que hemos creado a nuestro local (aplicar todos los cambios solo a esa rama)
   3. Anter de hacer la PR (pull-request) hacemos un PULL de develop para asegurarnos que no hay nuevos cambios mientras estabamos trabajando
@@ -6,7 +6,7 @@
   5. Añadir reviewers (personas) para comprobar que nuestro código esté bien
   6. Una vez aprovadas las reviews se podrá mergear sobre develop
 
-**Cómo actualizar una rama**
+# Cómo actualizar una rama
   1. git fetch
   2. git checkout develop
   3. git pull
@@ -17,7 +17,7 @@
   
   https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
 
-**NUNCA trabajar directamente sobre *develop***
+# NUNCA trabajar directamente sobre *develop*
 
 Se debería crear una rama por cada ticket a realizar.
 
@@ -29,11 +29,11 @@ Se debería crear una rama por cada ticket a realizar.
 
 Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del ticket) -> feature/CMS-41-estructura-github
 
-**Arquitectura (Docker/Kubernetes/SwiftStack/ElasticSearch)**
+# Arquitectura (Docker/Kubernetes/SwiftStack/ElasticSearch)
 
 Trabajar siempre dentro de la carpeta /architecture.
 
-**Virtual env**
+# Virtual env
 
 Para trabajar con django siempre utilizaremos un venv, pasos a seguir para crearlo:
 
@@ -43,7 +43,7 @@ Para trabajar con django siempre utilizaremos un venv, pasos a seguir para crear
 
 Solo hay que realizar el paso 1 cuando creemos el venv, desde esa vez basta con seguir a partir del 2.
 
-**Django**
+# Django
 
 Pasos para lanzar django:
 
