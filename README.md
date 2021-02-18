@@ -1,22 +1,25 @@
 **Proceso de trabajo**
-  1. Crear una rama apartir de la main
+  1. Crear una rama apartir de develop
   2. Hacemos un PULL de la rama que hemos creado a nuestro local (aplicar todos los cambios solo a esa rama)
-  3. Anter de hacer la PR hacemos un Pull de la main para asegurarnos que no hay nuevos cambios mientras estabamos trabajando.
-  4. Al terminar hacer un PUSH de nuestra rama a la rama main.
-  5. Comprobar los cambios y mergear la rama desde el Git
+  3. Anter de hacer la PR (pull-request) hacemos un PULL de develop para asegurarnos que no hay nuevos cambios mientras estabamos trabajando
+  4. Al terminar hacer un PUSH de nuestra rama a la rama develop
+  5. Añadir reviewers (personas) para comprobar que nuestro código esté bien
+  6. Una vez aprovadas las reviews se podrá mergear sobre develop
 
 **Cómo actualizar una rama**
   1. git fetch
-  2. git checkout main
+  2. git checkout develop
   3. git pull
-  4. git checkout "tu rama"
-  5. git merge main "tu rama"
+  4. git checkout "nombre_de_tu_rama"
+  5. git add "nombre_del_archivo"
+  6. git commit -m "mensaje de la modificacion"
+  7. git push -u origin "nombre_de_tu_rama"
   
   https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
 
-**NUNCA trabajar directamente sobre *main***
+**NUNCA trabajar directamente sobre *develop***
 
-Se deberia crear una rama por cada ticket a realizar.
+Se debería crear una rama por cada ticket a realizar.
 
 **Nomenclatura**
 
@@ -24,16 +27,26 @@ Se deberia crear una rama por cada ticket a realizar.
 - bugfix/ : resolucion de errores
 - feature/ : nuevo desarrollo
 
-Ejemplo: feature/CMS-X(Numero de ticket del Kanban)-nombre(funcionalidad del ticket)
+Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del ticket) -> feature/CMS-41-estructura-github
 
-Los espacios se separan por -
+**Arquitectura (Docker/Kubernetes/SwiftStack/ElasticSearch)**
 
-**Tecnologias**
-- Acceder y Leer contenidos: SwiftStack
-- Busqueda de archivos: SwiftStack
-- Balanceo de carga: Nginx
-- Gestion de usuarios: SwiftStack + Django 
-- Web: Django
+Trabajar siempre dentro de la carpeta /architecture.
 
-**URLS utiles**
-- https://meet.google.com/linkredirect?authuser=0&dest=https%3A%2F%2Fwww.nginx.com%2Fblog%2Fmaximizing-python-performance-with-nginx-parti-web-serving-and-caching%2F
+**Virtual env**
+
+Para trabajar con django siempre utilizaremos un venv, pasos a seguir para crearlo:
+
+  1. python3 -m venv venv
+  2. source venv/bin/activate
+  3. pip3 install -r requirements.txt
+
+Solo hay que realizar el paso 1 cuando creemos el venv, desde esa vez basta con seguir a partir del 2.
+
+**Django**
+
+Pasos para lanzar django:
+
+  1. pip install -r requirements.txt (en caso de no tenerlos instalado)
+  2. cd djandocms (hay que estar en la carpeta de django)
+  3. python3 manage.py runserver
