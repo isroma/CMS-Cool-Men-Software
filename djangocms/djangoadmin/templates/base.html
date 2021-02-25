@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Kaggle in Django</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.css"/>
+</head>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand pr-2" style="color: #00c884;" href="{% url 'welcome' %}">
+      Kaggle in Django
+    </a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="nav navbar-nav">
+        <li class="nav-item dropdown pr-2">
+          <a class="nav-link {% block active_competitions %}{% endblock %}" href="{% url 'welcome' %}">
+            <span class="fa fa-trophy pr-2" {% block color_competitions %}{% endblock %}></span>
+            Competiciones
+          </a>
+        </li>
+        <li class="nav-item pr-2">
+          <a class="nav-link {% block active_datasets %}{% endblock %}" href="{% url 'welcome' %}">
+            <span class="fa fa-database pr-2" {% block color_datasets %}{% endblock %}></span>
+            Datasets
+          </a>
+        </li>
+        <li class="nav-item pr-2">
+          <a class="nav-link {% block active_notebooks %}{% endblock %}" href="{% url 'welcome' %}">
+            <span class="fa fa-book pr-2" {% block color_notebooks %}{% endblock %}></span>
+            Notebooks
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <ul class="nav navbar-nav navbar-right">
+        {% if user.id is None or user.profile.verified == False %}
+        <li class="nav-item">
+          <a class="btn login-button" href="{% url 'login' %}">
+            <span class="fa fa-sign-in pr-2"></span>
+            Iniciar sesión
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-dark" style="width:100%; font-weight: 600; color: white" href="{% url 'register' %}">
+            <span class="fa fa-user-circle pr-2"></span>
+            Registrarse
+          </a>
+        </li>
+        {% else %}
+        
+        <ul class="nav-item dropdown animate slideIn">
+          <!-- Font size too small but that way it doesnt affect navbar size -->
+          <a class="nav-link dropdown-toggle" id="session" data-toggle="dropdown"
+            style="font-size: 7px; color: #00c884;">Sesión iniciada como: <br>
+            <i style="font-size: 9px; color: white;">{{ user }}</i></a>
+          <div class="dropdown-menu animate slideIn">
+            <a class="dropdown-item" href="{% url 'profile' %}">
+              <span class="fa fa-user pr-2"></span>
+              Ver perfil
+            </a>
+            <a class="dropdown-item" href="{% url 'change_password' %}">
+              <span class="fa fa-lock pr-2"></span>
+              Contraseñas
+            </a>
+            <a class="dropdown-item" id="session" href="{% url 'logout' %}">
+              <span class="fa fa-sign-out pr-1"></span>
+              Cerrar sesión
+            </a>
+          </div>
+        </ul>
+        {% if user.is_superuser or user.is_staff %}
+        <li class="nav-item pl-3">
+          <a class="btn btn-danger" href="{% url 'admin:index' %}">
+            <span class="fa fa-wrench"></span>
+          </a>
+        </li>
+        {% endif %}
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="alert text-center cookiealert" role="alert" {% block hide_cookies %}{% endblock %}>
+  <b>¿Te gustan las cookies?</b> &#x1F36A; Usamos las cookies para garantizarte una mejor experiencia como usuario
+  <a href="https://cookiesandyou.com/" target="_blank" class="pl-2" style="color: white;">Saber más</a>
+  <button type="button" class="pl-2 btn btn-primary btn-sm acceptcookies">
+    Estoy de acuerdo
+  </button>
+</div>
+
+<div class="container pt-4">
+  {% block page_content %}{% endblock %}
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+  integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+  integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.js"></script>
+
+</html>
