@@ -36,7 +36,19 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
+
+    # 3rd party apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
+
+    # Our apps
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +78,13 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of 'allauth'
+    'django.contrib.auth.backends.ModelBackend',
+    # 'allauth' specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 WSGI_APPLICATION = 'djangoadmin.wsgi.application'
 
@@ -117,4 +136,42 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 STATIC_URL = '/static/'
+
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
+
+# TODO: modify when mail is created
+# Login and sign in with Google
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '29904093278-iaj3igapi9g08jej17k82t4q9r1hn5mc.apps.googleusercontent.com',
+            'secret': 'ra8_YV39POu_Zgh2g_-0pWM-',
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/users/welcome'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'kaggleindjango@gmail.com'
+EMAIL_HOST_PASSWORD = 'Redes2019'
+EMAIL_PORT = 587
