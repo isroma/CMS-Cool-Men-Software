@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     # Our apps
     'users',
+    'homepage',
 ]
 
 MIDDLEWARE = [
