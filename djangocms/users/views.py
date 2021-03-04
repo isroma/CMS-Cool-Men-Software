@@ -14,10 +14,18 @@ import string
 
 
 def welcome(request):
+    """
+    Renders the page after login
+    """
     return render(request, 'welcome.html')
 
 
 def register(request):
+    """
+    Form for the first time a user creates his account
+    It handles (almost) all input exception
+    """
+
     form = RegisterForm(request.POST or None)
 
     if request.method == 'POST':
@@ -75,6 +83,11 @@ def register(request):
 
 
 def login(request):
+    """
+    Form for user login
+    It handles (almost) all input exception
+    """
+
     form = LoginForm(request.POST or None)
 
     if request.method == 'POST':
@@ -105,11 +118,20 @@ def login(request):
 
 
 def logout(request):
+    """
+    Logouts user if he is logged in
+    """
+
     do_logout(request)
+    
     return redirect('/users/login')
 
 
 def activate(request, uidb64, token):
+    """
+    If user has a token (account already created), he can automatically log in
+    """
+
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -122,7 +144,6 @@ def activate(request, uidb64, token):
 
     if user is not None and account_activation_token.check_token(user, token):
         Profile.objects.filter(user=user).update(verified=True)
-        
         do_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
         return redirect('/users/welcome', context)
@@ -132,6 +153,11 @@ def activate(request, uidb64, token):
 
 
 def recover_password(request):
+    """
+    Form for recovering user's password via email
+    It handles (almost) all input exception
+    """
+
     form = PasswordForm(request.POST or None)
 
     if request.method == 'POST':
@@ -166,6 +192,11 @@ def recover_password(request):
 
 
 def change_password(request):
+    """
+    Form for changing user's password knowing the old one
+    It handles (almost) all input exception
+    """
+
     form = ProfileForm(request.POST or None)
 
     if request.method == 'POST':
@@ -199,14 +230,15 @@ def change_password(request):
 
 
 def profile(request):
+    """
+    Returns user extra information (not Django's default one)
+    """
 
     user = Profile.objects.get(user=request.user)
 
     context = {
         'username': request.user.username,
-        'points': user.points,
-        'unlock': 25 - user.points,
-        'challenger': user.challenger
+        'verified': user.verified,
     }
 
     return render(request, 'profile.html', context)

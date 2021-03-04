@@ -5,6 +5,10 @@ from django.contrib.auth.models import User
 
 
 class RegisterForm(forms.Form):
+    """
+    Model form for user params, it's done here so we can add more params than Django's default ones
+    """
+
     username = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Nombre de usuario")
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}), label="Correo electrónico")
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Contraseña")
@@ -16,6 +20,10 @@ class RegisterForm(forms.Form):
 
 
 class LoginForm(forms.Form):
+    """
+    Model form for user login, only taking into account username and password
+    """
+
     username = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Nombre de usuario")
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Contraseña")
 
@@ -26,6 +34,10 @@ class LoginForm(forms.Form):
 
 
 class PasswordForm(forms.Form):
+    """
+    Model form for user recovering password via email
+    """
+
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}), label="Correo electrónico")
 
     class Meta:
@@ -35,6 +47,11 @@ class PasswordForm(forms.Form):
 
 
 class ProfileForm(forms.Form):
+    """
+    Model form for user changing his password with the old one
+    TODO: it should be renamed to a clearer name like ChangePasswordForm
+    """
+
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Contraseña antigua")
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Nueva contraseña")
     password_repeat = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Repetir nueva contraseña")
