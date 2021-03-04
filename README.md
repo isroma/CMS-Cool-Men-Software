@@ -53,11 +53,11 @@ Pasos para lanzar django:
 
 Estructura para entender Django
 
-CMS-COOL-MEN-SOFTWARE
-├── architecture: everything that is NOT Django
-├── djangocms: Django project
-│   ├── djangoadmin: manages everything in Django
-│   ├── homepage: main front site
-│   ├── users: user management
-├── README.md
-└── requirements.txt
+    CMS-COOL-MEN-SOFTWARE
+    ├── architecture      | everything that is NOT Django
+    ├── djangocms         | Django project
+    │   ├── djangoadmin   | manages everything in Django
+    │   ├── homepage      | main front site
+    │   ├── users         | user management
+    ├── README.md
+    └── requirements.txt
