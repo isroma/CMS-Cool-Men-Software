@@ -47,6 +47,17 @@ Solo hay que realizar el paso 1 cuando creemos el venv, desde esa vez basta con 
 
 Pasos para lanzar django:
 
-  1. pip install -r requirements.txt (en caso de no tenerlos instalado)
-  2. cd djandocms (hay que estar en la carpeta de django)
+  1. pip3 install -r requirements.txt (en caso de no tenerlos instalado)
+  2. cd djandocms (hay que estar en la carpeta de Django)
   3. python3 manage.py runserver
+
+Estructura para entender Django
+
+CMS-COOL-MEN-SOFTWARE
+├── architecture: everything that is NOT Django
+├── djangocms: Django project
+│   ├── djangoadmin: manages everything in Django
+│   ├── homepage: main front site
+│   ├── users: user management
+├── README.md
+└── requirements.txt
