@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Kaggle in Django</title>
+  <title>CMS</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -17,10 +17,11 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand pr-2" style="color: #00c884;" href="{% url 'welcome' %}">
-      Kaggle in Django
+    <a class="navbar-brand pr-2" style="color: white; font-weight: 600" href="{% url 'welcome' %}">
+      <span class="fa fa-connectdevelop pr-2" style="color: white"></span>
+      Cool Men Software
     </a>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <!-- <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="nav navbar-nav">
         <li class="nav-item dropdown pr-2">
           <a class="nav-link {% block active_competitions %}{% endblock %}" href="{% url 'welcome' %}">
@@ -41,7 +42,7 @@
           </a>
         </li>
       </ul>
-    </div>
+    </div> -->
     <div>
       <ul class="nav navbar-nav navbar-right">
         {% if user.id is None or user.profile.verified == False %}
