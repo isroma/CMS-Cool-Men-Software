@@ -57,6 +57,8 @@ Estructura para entender Django
     ├── architecture      | everything that is NOT Django
     ├── djangocms         | Django project
     │   ├── djangoadmin   | manages everything in Django
+    │   ├── blog          | prototype for user
+    │   ├── search        | manages elascticsearch
     │   ├── homepage      | main front site
     │   ├── users         | user management
     ├── README.md
