@@ -4,7 +4,7 @@
   3. Anter de hacer la PR (pull-request) hacemos un PULL de develop para asegurarnos que no hay nuevos cambios mientras estabamos trabajando
   4. Al terminar hacer un PUSH de nuestra rama a la rama develop
   5. Añadir reviewers (personas) para comprobar que nuestro código esté bien
-  6. Una vez aprovadas las reviews se podrá mergear sobre develop 
+  6. Una vez aprobadas las reviews se podrá mergear sobre develop 
 
 # Cómo actualizar una rama
   1. git fetch
