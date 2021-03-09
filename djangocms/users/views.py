@@ -15,7 +15,7 @@ import string
 
 def welcome(request):
     """
-    Renders the page after login
+    Renders a welcome website after login
     """
     return render(request, 'welcome.html')
 

@@ -148,25 +148,24 @@ BOOTSTRAP4 = {
     'include_jquery': True,
 }
 
-# TODO: modify when mail is created
 # Login and sign in with Google
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': '29904093278-iaj3igapi9g08jej17k82t4q9r1hn5mc.apps.googleusercontent.com',
-            'secret': 'ra8_YV39POu_Zgh2g_-0pWM-',
-            'key': ''
-        },
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
+    # 'google': {
+    #     'APP': {
+    #         'client_id': '29904093278-iaj3igapi9g08jej17k82t4q9r1hn5mc.apps.googleusercontent.com',
+    #         'secret': 'ra8_YV39POu_Zgh2g_-0pWM-',
+    #         'key': ''
+    #     },
+    #     'SCOPE': [
+    #         'profile',
+    #         'email',
+    #     ],
+    #     'AUTH_PARAMS': {
+    #         'access_type': 'online',
+    #     }
+    # }
 }
 
 SITE_ID = 1
@@ -174,6 +173,6 @@ LOGIN_REDIRECT_URL = '/users/welcome'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'kaggleindjango@gmail.com'
-EMAIL_HOST_PASSWORD = 'Redes2019'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
