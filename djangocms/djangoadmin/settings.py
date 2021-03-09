@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'django_elasticsearch_dsl',
 
     # 3rd party apps
     'allauth',
@@ -50,7 +51,15 @@ INSTALLED_APPS = [
     # Our apps
     'users',
     'homepage',
+    'search',
+    'blog',
 ]
+
+ELASTICSEARCH_DSL={
+    'default':{
+        'hosts':'192.168.49.2:31000'
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
