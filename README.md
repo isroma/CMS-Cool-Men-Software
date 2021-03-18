@@ -6,6 +6,9 @@
   5. Añadir reviewers (personas) para comprobar que nuestro código esté bien
   6. Una vez aprobadas las reviews se podrá mergear sobre develop 
 
+NOTA: cada vez que instalemos una librería actualizamos los requirements
+```pip3 freeze > requirements.txt```
+
 # Cómo actualizar una rama
   1. git fetch
   2. git checkout develop

@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'users',
     'homepage',
     'search',
-    'blog',
 ]
 
 ELASTICSEARCH_DSL={
