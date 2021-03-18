@@ -15,13 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
 
 from search import views as search_views
 
 urlpatterns = [
+    path('', lambda req: redirect('/homepage/index')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('users/', include('users.urls')),
     path('homepage/', include('homepage.urls')),
-    path('search/',search_views.search),
+    path('search/', search_views.search),
 ]
