@@ -48,21 +48,26 @@ Solo hay que realizar el paso 1 cuando creemos el venv, desde esa vez basta con 
 
 # Django
 
-Pasos para lanzar django:
+Pasos para lanzar Django:
 
-  1. pip3 install -r requirements.txt (en caso de no tenerlos instalado)
+  1. pip3 install -r requirements.txt (tras haber activado el venv y en caso de no tenerlos instalados)
   2. cd djandocms (hay que estar en la carpeta de Django)
-  3. python3 manage.py runserver
+  3. docker-compose up (construye las dos imagenes de docker, postgresql y django)
+  4. docker exec -it <container_id> python manage.py createsuperuser (ejemplo para lanzar comandos de django dockerizado)
 
 Estructura para entender Django
 
     CMS-COOL-MEN-SOFTWARE
-    ├── architecture      | everything that is NOT Django
-    ├── djangocms         | Django project
-    │   ├── djangoadmin   | manages everything in Django
-    │   ├── blog          | prototype for user
-    │   ├── search        | manages elascticsearch
-    │   ├── homepage      | main front site
-    │   ├── users         | user management
-    ├── README.md
-    └── requirements.txt
+    ├── architecture          | everything that is NOT Django
+    ├── djangocms             | django project
+    │   ├── data              | manages postgresql database
+    │   ├── djangoadmin       | manages everything in Django
+    │   ├── homepage          | main front site
+    │   ├── search            | manages elascticsearch
+    │   ├── static            | all images, css, etc
+    │   ├── users             | django user management
+    │   ├── docker-compose    | docker-compose to build docker
+    │   ├── Dockerfile        | create docker
+    │   ├── manage.py         | script to execute django commands
+    │   ├── requirements.txt  | all requirements
+    └── README.md
