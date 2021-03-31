@@ -1,1 +1,16 @@
 venv/
+
+# python stuff
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+.idea*
+.coverage
+__pycache__
+
+# vscode
+.devcontainer/devcontainer.json
+.devcontainer/docker-compose.yml
+.vscode
+.pytest_cache
