@@ -177,3 +177,9 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'kaggleindjango@gmail.com'
 EMAIL_HOST_PASSWORD = 'Redes2019'
 EMAIL_PORT = 587
+
+
+SWIFT_AUTH_URL = "http://127.0.0.1:8080/auth/v1.0"
+SWIFT_USER = "test"
+SWIFT_PASSWORD = "test"
+SWIFT_CONTAINER = "container"

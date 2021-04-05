@@ -26,3 +26,4 @@ sqlparse==0.4.1
 urllib3==1.26.3
 zipp==3.4.0
 tika==1.24
+python-swiftclient==3.11.1

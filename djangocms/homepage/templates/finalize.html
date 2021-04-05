@@ -1,0 +1,9 @@
+<html>
+    <body>
+        Done! Now share the following link(s):
+        {% for id in ids %}
+            <a href="{% url 'download' id %}">http://{{ host}}{% url 'download' id %}</a>
+        {% endfor %}
+        <a href="/">New upload</a>
+    </body>
+</html>
