@@ -8,9 +8,13 @@ __pycache__/
 .idea*
 .coverage
 __pycache__
+*.pyc
 
 # vscode
 .devcontainer/devcontainer.json
 .devcontainer/docker-compose.yml
 .vscode
 .pytest_cache
+
+# postgresql
+djangocms/data/
