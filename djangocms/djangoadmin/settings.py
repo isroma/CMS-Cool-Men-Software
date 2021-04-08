@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,8 @@ SECRET_KEY = 'baoxsiue+$!avor&00-jhuwx-l*ega+r!!f%36!sluo-hryz^s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+# All local hosts
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -166,22 +168,30 @@ BOOTSTRAP4 = {
 
 # Login and sign in with Google
 
+path_to_json = "/djangocms/credentials.json"
+
+with open(path_to_json, "r") as handler:
+    credentials = json.load(handler)
+
+gmail = credentials["gmail"]
+google_api = credentials["google_api"]
+
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
-    # 'google': {
-    #     'APP': {
-    #         'client_id': '29904093278-iaj3igapi9g08jej17k82t4q9r1hn5mc.apps.googleusercontent.com',
-    #         'secret': 'ra8_YV39POu_Zgh2g_-0pWM-',
-    #         'key': ''
-    #     },
-    #     'SCOPE': [
-    #         'profile',
-    #         'email',
-    #     ],
-    #     'AUTH_PARAMS': {
-    #         'access_type': 'online',
-    #     }
-    # }
+    'google': {
+        'APP': {
+            'client_id': google_api['client_id'],
+            'secret': google_api['secret'],
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
 }
 
 SITE_ID = 1
@@ -189,8 +199,8 @@ LOGIN_REDIRECT_URL = '/users/welcome'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = gmail['username']
+EMAIL_HOST_PASSWORD = gmail['password']
 EMAIL_PORT = 587
 
 
