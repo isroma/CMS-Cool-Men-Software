@@ -18,7 +18,7 @@ __pycache__
 .pytest_cache
 
 # postgresql
-djangocms/data/**
+djangocms/data/
 
 # credentials
 djangocms/credentials.json
