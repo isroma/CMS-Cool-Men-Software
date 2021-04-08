@@ -9,14 +9,14 @@
             <br>
             {% if request.user.is_authenticated == False %}
             <p>No olvides <b>verificar tu correo electrónico</b> para poder disfrutar al completo de todas
-                las prestaciones de Kaggle in Django. Si aún no has recibido el correo electrónico,
+                las prestaciones de Cool Men Software. Si aún no has recibido el correo electrónico,
                 espera unos minutos, a veces los servidores tardan un poco más de lo normal en responder.
             </p>
             <p>El correo electrónico se ha enviado a <b>{{ user.email }}</b></p>
             {% else %}
             <p>
                 <span class="fa fa-check-circle pr-2" style="color: #00c884;"></span>
-                <b>Correo electrónico confirmado</b>, empieza a disfrutar de Kaggle in Django al máximo.
+                <b>Correo electrónico confirmado</b>, empieza a disfrutar de Cool Men Software al máximo.
             </p>
             {% endif %}
         </div>
