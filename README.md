@@ -36,24 +36,15 @@ Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del tic
 
 Trabajar siempre dentro de la carpeta /architecture.
 
-# Virtual env
-
-Para trabajar con django siempre utilizaremos un venv, pasos a seguir para crearlo:
-
-  1. python3 -m venv venv
-  2. source venv/bin/activate
-  3. pip3 install -r requirements.txt
-
-Solo hay que realizar el paso 1 cuando creemos el venv, desde esa vez basta con seguir a partir del 2.
-
 # Django
+
+Trabajar siempre dentro de la carpeta /djangocms.
 
 Pasos para lanzar Django:
 
-  1. pip3 install -r requirements.txt (tras haber activado el venv y en caso de no tenerlos instalados)
-  2. cd djandocms (hay que estar en la carpeta de Django)
-  3. docker-compose up (construye las dos imagenes de docker, postgresql y django)
-  4. docker exec -it <container_id> python manage.py createsuperuser (ejemplo para lanzar comandos de django dockerizado)
+  1. cd djandocms (hay que estar en la carpeta de Django)
+  2. docker-compose up (construye las dos imagenes de docker, postgresql y django)
+  3. docker exec -it <container_id> python manage.py createsuperuser (ejemplo para lanzar comandos de django dockerizado)
 
 Estructura para entender Django
 
