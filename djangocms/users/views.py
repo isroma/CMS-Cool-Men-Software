@@ -56,23 +56,22 @@ def register(request):
                 )
                 
                 user.save()
-                # TODO: dont forget to change after email is setup
-                profile = Profile.objects.create(user=user, verified=True)
+                profile = Profile.objects.create(user=user, verified=False)
 
-                # mail_subject = 'Activa tu cuenta de Kaggle in Django'
-                # message = render_to_string('email.html', {
-                #     'user': user,
-                #     'domain': 'http://127.0.0.1:8000',
-                #     'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
-                #     'token': account_activation_token.make_token(user),
-                # })
-                # from_email = 'kaggleindjango@gmail.com'
-                # to_email = form.cleaned_data.get('email')
-                # email = EmailMultiAlternatives(
-                #     mail_subject, message, from_email, to=[to_email])
-                # email.content_subtype = 'html'
+                mail_subject = 'Activa tu cuenta de Cool Men Software'
+                message = render_to_string('email.html', {
+                    'user': user,
+                    'domain': 'http://localhost:8000',
+                    'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
+                    'token': account_activation_token.make_token(user),
+                })
+                from_email = 'coolmensoftware@gmail.com'
+                to_email = form.cleaned_data.get('email')
+                email = EmailMultiAlternatives(
+                    mail_subject, message, from_email, to=[to_email])
+                email.content_subtype = 'html'
 
-                # email.send()
+                email.send()
 
                 context = {
                     'user': user
@@ -173,8 +172,8 @@ def recover_password(request):
 
                 mail_subject = 'Recuperación de contraseña'
                 message = '<h3>Tu nueva contraseña es:</h3><strong>' + new_password + '</strong><br> \
-                        <p>Ya puedes iniciar sesión en Kaggle in Django con ella.</p>'
-                from_email = 'kaggleindjango@gmail.com'
+                        <p>Ya puedes iniciar sesión en Cool Men Software con ella.</p>'
+                from_email = 'coolmensoftware@gmail.com'
                 to_email = form.cleaned_data.get('email')
                 email = EmailMessage(mail_subject, message, from_email, to=[to_email])
                 email.content_subtype = 'html'
