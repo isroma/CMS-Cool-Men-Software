@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
-    'django_elasticsearch_dsl',
 
     # 3rd party apps
     'allauth',
@@ -49,11 +48,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'bootstrap_datepicker_plus',
     'bootstrap4',
+    'django_elasticsearch_dsl',
 
     # Our apps
     'users',
     'homepage',
-    'search',
+    'search'
 ]
 
 ELASTICSEARCH_DSL={
