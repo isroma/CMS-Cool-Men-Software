@@ -11,12 +11,11 @@ services:
       - POSTGRES_PASSWORD=postgres
   web:
     build: .
-    command: >
-      sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    entrypoint: ./docker-entrypoint.sh
     volumes:
       - .:/djangocms
     ports:
-      - "8000:8000"
+      - "5432:5432"
     depends_on:
       - db
     links:

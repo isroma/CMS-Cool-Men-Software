@@ -4,3 +4,6 @@ WORKDIR /djangocms
 COPY requirements.txt /djangocms/
 RUN pip install -r requirements.txt
 COPY . /djangocms/
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"] g
