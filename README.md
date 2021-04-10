@@ -92,6 +92,10 @@ Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el cont
       ```
       docker exec -it <container_id> python manage.py createsuperuser
       ```
+  3. Otro ejemplo de utilidad, para instalar un nuevo requirement (previo pip freeze > requirements dentro de la carpeta djangocms):
+      ```
+      docker exec -it <container_id> pip install -r requirements.txt   
+      ```
 
 Estructura para entender Django
 

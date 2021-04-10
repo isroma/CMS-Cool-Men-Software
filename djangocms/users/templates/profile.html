@@ -11,9 +11,8 @@
             Perfil de <i>{{ request.user.username }}</i>
          </h1>
          <p class="pt-4">
-            Los <b style="color: #00c884">puntos de participación</b> se consiguen subiendo predicciones
-            a distintas competiciones de forma correcta. Estos permiten que crees competiciones en la web
-            cuando tengas los necesarios.
+            El <b style="color: #235691">email verificado</b> se obtiene a través del correo electrónico
+            que se envía automáticamente al crear una cuenta en Cool Men Software.
          </p>
       </div>
       <div class="row">
@@ -21,12 +20,11 @@
             <div class="myform form">
                <div>
                   <div class="text-center pt-2">
-                     <p style="font-size: larger;"><b>Puntos de participación:</b> {{ points }}</p>
-                     <p style="font-size: larger;"><b>Nivel de challenger:</b>
-                        {% if challenger %}
-                        desbloqueado
+                     <p style="font-size: larger;"><b>Email verificado:</b>
+                        {% if verified %}
+                        correctamente
                         {% else %}
-                        faltan {{ unlock }} puntos para desbloquearse
+                        incorrectamente
                         {% endif %}
                      </p>
                   </div>
