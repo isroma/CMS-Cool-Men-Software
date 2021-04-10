@@ -15,16 +15,16 @@
 
 .login-button {
     color: #fff !important;
-    border: 1px solid #00c884;
-    background: #00c884 !important;
+    border: 1px solid #235691;
+    background: #235691 !important;
     width:100%;
     font-weight: 600;
     color:#fff;
 }
 
 .login-button:hover {
-    border: 1px solid #00b476;
-    background: #00b476 !important;
+    border: 1px solid #122f50;
+    background: #122f50 !important;
 }
 
 .my-input {
