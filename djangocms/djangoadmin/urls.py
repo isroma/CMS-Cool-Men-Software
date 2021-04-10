@@ -27,3 +27,6 @@ urlpatterns = [
     path('homepage/', include('homepage.urls')),
     path('search/', search_views.search),
 ]
+
+admin.site.index_template = 'custom_admin.html'
+admin.autodiscover()
