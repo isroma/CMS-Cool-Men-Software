@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django_elasticsearch_dsl import Document
 from django_elasticsearch_dsl.registries import registry
 from elasticsearch_dsl.query import MultiMatch
-from .models import Post
+from search.models import Post
+from users.models import Profile
 
 # Create your views here.
 
@@ -40,6 +41,7 @@ def search(request):
     if id is None:
         return render(request,'search.html')
         
+    # TODO: this only works with last name == 'django'
     elif id in PostDocument.Index.name:
         mq = MultiMatch(query=q, fields=['titulo', 'descripcion'], fuzziness='AUTO')
         posts = PostDocument.search(index=id).query(mq)
