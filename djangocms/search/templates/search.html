@@ -1,4 +1,9 @@
-Busqueda de ElasticSearch
+{% extends "base.html" %}
+{% block active_search %} active {% endblock %}
+{% block color_search %} style="color: #157ffb;" {% endblock %}
+{% load static %}
+{% block page_content %}
+
 <form method='get'>
     <input id='q' name='q' type='text' placeholder="your search...">
     <select name="indice" id="id">
@@ -34,3 +39,4 @@ Busqueda de ElasticSearch
   {{item.slug}}
   {% endfor %}
 
+{% endblock %}
