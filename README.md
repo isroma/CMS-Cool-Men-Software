@@ -1,4 +1,5 @@
 # Proceso de trabajo
+
   1. Crear una rama apartir de develop
   2. Hacemos un PULL de la rama que hemos creado a nuestro local (aplicar todos los cambios solo a esa rama)
   3. Anter de hacer la PR (pull-request) hacemos un PULL de develop para asegurarnos que no hay nuevos cambios mientras estabamos trabajando
@@ -12,6 +13,7 @@ pip3 freeze > requirements.txt
 ```
 
 # Cómo actualizar una rama
+
   1. git fetch
   2. git checkout develop
   3. git pull
@@ -39,6 +41,14 @@ Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del tic
 # Arquitectura 
 
 Incluimos en arquitectura Docker/Kubernetes/SwiftStack/ElasticSearch, trabajar siempre dentro de la carpeta /architecture.
+
+ElasticSearch se despliega con Docker a la vez que Django y PostgreSQL, hay que tener cuidado únicamente con que cada vez que se indexe algo llamar al siguiente comando:
+
+```
+docker exec -it <container_id> python manage.py search_index --rebuild
+```
+
+Originalmente estaba en el docker-entrypoint pero como pide una confirmacion de y/N, debe ser lanzada manualmente.
 
 # Django
 
