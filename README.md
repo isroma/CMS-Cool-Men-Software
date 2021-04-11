@@ -42,13 +42,11 @@ Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del tic
 
 Incluimos en arquitectura Docker/Kubernetes/SwiftStack/ElasticSearch, trabajar siempre dentro de la carpeta /architecture.
 
-ElasticSearch se despliega con Docker a la vez que Django y PostgreSQL, hay que tener cuidado únicamente con que cada vez que se indexe algo llamar al siguiente comando:
+ElasticSearch se despliega con Docker a la vez que Django y PostgreSQL, hay que tener cuidado únicamente con que cada vez que se indexe algo llamar al siguiente comando si queremos reindexar:
 
 ```
 docker exec -it <container_id> python manage.py search_index --rebuild
 ```
-
-Originalmente estaba en el docker-entrypoint pero como pide una confirmacion de y/N, debe ser lanzada manualmente.
 
 # Django
 
