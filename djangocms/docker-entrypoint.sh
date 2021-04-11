@@ -12,6 +12,10 @@ python manage.py makemigrations
 echo "----- Apply database migrations -----"
 python manage.py migrate
 
+# Antes de comenzar hay que reinicar los indices
+echo "----- Rebuilding elasticsearch index -----"
+python manage.py search_index --rebuild 
+
 # Start server
 echo "----- Starting server on port 5432 -----"
 python manage.py runserver 0.0.0.0:5432

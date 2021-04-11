@@ -1,6 +1,9 @@
-version: "3.9"
-   
+version: "3.3"
 services:
+  elasticsearch:
+    image: bitnami/elasticsearch
+    ports:
+    - "9200:31000"
   db:
     image: postgres
     volumes:

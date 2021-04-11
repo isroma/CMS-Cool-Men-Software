@@ -1,12 +1,36 @@
 Busqueda de ElasticSearch
 <form method='get'>
     <input id='q' name='q' type='text' placeholder="your search...">
+    <select name="indice" id="id">
+        <option value="posts">Posts</option>
+        <option value="medico" selected>Medico</option>
+        <option value="administracion">Administracion</option>
+    </select>
+      <div>
+        <button type="submit">Submit</button>
+      </div>
 </form>
+  
+  {% for item in posts %}
+  {{item.id}}
+  {{item.title}}
+  {{item.description}}
+  {{item.slug}}
+  {% endfor %}
 
-{% for item in posts %}
-    {{item.id}}
-    {{item.title}}
-    {{item.slug}}
-    {{item.image}}
-<br>
-{% endfor %}
+    
+  {% for item in medico %}
+  {{item.id}}
+  {{item.title}}
+  {{item.description}}
+  {{item.slug}}
+  {% endfor %}
+
+    
+  {% for item in administracion %}
+  {{item.id}}
+  {{item.title}}
+  {{item.description}}
+  {{item.slug}}
+  {% endfor %}
+
