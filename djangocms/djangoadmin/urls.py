@@ -25,7 +25,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('users/', include('users.urls')),
     path('homepage/', include('homepage.urls')),
-    path('search/', search_views.search),
+    path('search/', include('search.urls')),
 ]
 
 admin.site.index_template = 'custom_admin.html'
