@@ -21,28 +21,22 @@
       <span class="fa fa-connectdevelop pr-2" style="color: white"></span>
       Cool Men Software
     </a>
-    <!-- <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="nav navbar-nav">
         <li class="nav-item dropdown pr-2">
-          <a class="nav-link {% block active_competitions %}{% endblock %}" href="{% url 'welcome' %}">
-            <span class="fa fa-trophy pr-2" {% block color_competitions %}{% endblock %}></span>
-            Competiciones
+          <a class="nav-link {% block active_index %}{% endblock %}" href="{% url 'index' %}">
+            <span class="fa fa-folder-open pr-2" {% block color_index %}{% endblock %}></span>
+            Mis archivos
           </a>
         </li>
         <li class="nav-item pr-2">
-          <a class="nav-link {% block active_datasets %}{% endblock %}" href="{% url 'welcome' %}">
-            <span class="fa fa-database pr-2" {% block color_datasets %}{% endblock %}></span>
-            Datasets
-          </a>
-        </li>
-        <li class="nav-item pr-2">
-          <a class="nav-link {% block active_notebooks %}{% endblock %}" href="{% url 'welcome' %}">
-            <span class="fa fa-book pr-2" {% block color_notebooks %}{% endblock %}></span>
-            Notebooks
+          <a class="nav-link {% block active_search %}{% endblock %}" href="{% url 'search' %}">
+            <span class="fa fa-search pr-2" {% block color_search %}{% endblock %}></span>
+            Búsqueda
           </a>
         </li>
       </ul>
-    </div> -->
+    </div>
     <div>
       <ul class="nav navbar-nav navbar-right">
         {% if user.id is None or user.profile.verified == False %}
