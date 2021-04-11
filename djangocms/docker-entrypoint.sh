@@ -6,11 +6,11 @@ python manage.py initadmin --username=admin --email=admin@example.com --password
 
 # Make database migrations before applying
 echo "----- Make database migrations -----"
-python manage.py makemigrations
+yes | python manage.py makemigrations
 
 # Apply database migrations
 echo "----- Apply database migrations -----"
-python manage.py migrate
+yes | python manage.py migrate
 
 # Start server
 echo "----- Starting server on port 5432 -----"
