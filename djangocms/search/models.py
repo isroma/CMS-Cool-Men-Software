@@ -5,15 +5,15 @@ from django.utils.text import slugify
 
 class Post(models.Model):
     
-    indice=models.CharField(max_length=255,blank=True,null=True)
-    title=models.CharField(max_length=255,blank=True,null=True)
-    description=models.TextField(blank=True,null=True)
-    order=models.IntegerField(blank=True,null=True)
-    slug=models.SlugField(default='',blank=True)
+    indice =models.CharField(max_length=255,blank=True,null=True)
+    titulo = models.CharField(max_length=255,blank=True,null=True)
+    descripcion = models.TextField(blank=True,null=True)
+    order = models.IntegerField(blank=True,null=True)
+    slug = models.SlugField(default='',blank=True)
 
     def save(self):
-        self.slug=slugify(self.title)
-        super(Post,self).save()
+        self.slug = slugify(self.titulo)
+        super(Post, self).save()
 
     def str(self):
-        return '%s' % self.title
+        return '%s' % self.titulo
