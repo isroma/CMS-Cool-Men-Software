@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /djangocms/logs/*.log
+output.elasticsearch: # Por ahora mandamos a elasticsearch directamente, habra que conectar por logstash
+  hosts: ["https://172.26.113.205:31920"] # Reemplazar por la IP y puerto de elasticsearch
+  protocol: "https"
+  username: "elastic"
+  password: "{PASSWORD DE ELASTIC}"
+  ssl.verification_mode: none

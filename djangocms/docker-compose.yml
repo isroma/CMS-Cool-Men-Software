@@ -28,3 +28,11 @@ services:
       - elasticsearch
     links:
       - db:db
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.8.0
+    volumes:
+      - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./logs:/djangocms/logs:ro
+    entrypoint: 'filebeat -e -strict.perms=false -d "*"'
+    depends_on:
+      - web

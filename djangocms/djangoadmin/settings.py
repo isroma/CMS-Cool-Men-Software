@@ -217,8 +217,8 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/djangocms/debug.log',
-        },
+            'filename': '/djangocms/logs/debug.log',
+        }
     },
     'loggers': {
         'django': {
