@@ -34,5 +34,9 @@ services:
       - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - ./logs:/djangocms/logs:ro
     entrypoint: 'filebeat -e -strict.perms=false -d "*"'
+    environment:
+      ELASTICSEARCH_URL: https://172.26.113.205:31920 # Replace with IP and port for elasticsearch
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD: password # Replace with elastic user password
     depends_on:
       - web
