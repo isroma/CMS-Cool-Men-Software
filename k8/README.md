@@ -20,15 +20,19 @@ Abajo estan las instrucciones para la configuracion de los recursos que necesita
 
     `kubectl apply -f ./k8/recursos/elk/kibana/kibana.yaml`
     
-6. Esperamos un rato, y corremos el siguiente comando para comprobar que el estado de los pods de "es-cluster-cms" y "kibana-cms-kb..." pasan todos a 1/1:
+5. Esperamos un rato, y corremos el siguiente comando para comprobar que el estado de los pods de "es-cluster-cms" y "kibana-cms-kb..." pasan todos a 1/1:
 
     `kubectl get pods -A`
 
-8. Una vez todos los pods esten creados, extraemos la password de elasticsearch que se nos habra creado para el cluster y la guardamos en un sitio seguro, con:
+6. Una vez todos los pods esten creados, extraemos la password de elasticsearch que se nos habra creado para el cluster y la guardamos en un sitio seguro, con:
     
     `kubectl get secret es-cluster-cms-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode; echo`
 
-10. Ya deberiamos poder acceder a:
+7. Ya deberiamos poder acceder a:
 
     - Kibana dashboard (usar password del usuario de elasticsearch): `https://{IP DEL NODO}:31560`
     - Cluster de elasticsearch (usar password del usuario de elasticsearch): `https://{IP DEL NODO}:31920`
+    
+8. Podemos ver los dos nodos de elasticsearch (el master y el data node) end:
+
+    `https://{IP DEL NODO}:31920/_cat/nodes?v`
