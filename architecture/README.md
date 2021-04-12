@@ -37,6 +37,6 @@ Debemos estar dentro de la carpeta "architecture" para ejecutar los siguientes c
     - Kibana dashboard (usar password del usuario de elasticsearch): `https://{IP DEL NODO}:31560`
     - Cluster de elasticsearch (usar password del usuario de elasticsearch): `https://{IP DEL NODO}:31920`
     
-8. Podemos ver los dos nodos de elasticsearch (el master y el data node) end:
+8. Podemos ver los dos nodos de elasticsearch (el master y el data node) en:
 
     `https://{IP DEL NODO}:31920/_cat/nodes?v`
