@@ -52,6 +52,20 @@ docker exec -it <container_id> python manage.py search_index --rebuild
 
 Trabajar siempre dentro de la carpeta /djangocms.
 
+### **Configuración** de logs:
+
+Para mandar los logs de django a elasticsearch, se utiliza "filebeat". El container de filebeat corre junto al de django y manda los logs directamente a elasticsearch (hasta que no tengamos logstash).
+
+Para configurar los logs de django y que se manden a Elasticsearch, primero hay que tener el cluster montado siguiendo las instrucciones [aqui](architecture/README.md). Luego:
+
+  1. Cambiar el valor de `output.elasticsearch.hosts` en [la configuracion de filebeat](djangocms/config/filebeat.yml) para apuntar a un nodo del cluster. 
+  
+  2. En el mismo archivo, cambiar el valor de `output.elasticsearch.password` por la password que tenga el usuario de elastic en el cluster creado.
+  
+  3. Cuando tengamos logstash, los logs se podran ver en kibana. De momento se puede ver que estan elasticsearch haciendo GET requests al indice creado por filebeat.
+  
+   
+ 
 ### **Instalación** de Django:
 
 Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el container o las imágenes.
