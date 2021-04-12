@@ -10,8 +10,10 @@ spec:
       config:
         node.master: true
         node.data: true
-        node.ingest: true
+        node.ml: false
         node.store.allow_mmap: false
+        node.attr.temp: hot
+        node.max_local_storage_nodes: 2
       podTemplate:
         spec:
           containers:
@@ -35,10 +37,12 @@ spec:
     - name: nodos-datos
       count: 1
       config:
-        node.master: true
+        node.master: false
         node.data: true
-        node.ingest: true
+        node.ml: false
         node.store.allow_mmap: false
+        node.attr.temp: warm
+        node.max_local_storage_nodes: 2
       podTemplate:
         spec:
           containers:
