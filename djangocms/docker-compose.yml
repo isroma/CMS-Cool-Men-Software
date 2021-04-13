@@ -2,10 +2,15 @@ version: "3.3"
 
 services:
 
+  swiftstack:
+    image: swiftstack/picoswiftstack
+    ports: 
+      - "8080:8080"
+
   elasticsearch:
     image: bitnami/elasticsearch
     ports:
-    - "9200:31000"
+      - "9200:31000"
 
   db:
     image: postgres
