@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,12 +26,15 @@ SECRET_KEY = 'baoxsiue+$!avor&00-jhuwx-l*ega+r!!f%36!sluo-hryz^s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# All local hosts
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_interface', # 3rd party app but it has to load before Django admin
+    'colorfield', # 3rd party app but it has to load before Django admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,10 +50,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'bootstrap_datepicker_plus',
     'bootstrap4',
+    'django_elasticsearch_dsl',
 
     # Our apps
     'users',
     'homepage',
+    'search'
 ]
 
 MIDDLEWARE = [
@@ -94,11 +100,35 @@ WSGI_APPLICATION = 'djangoadmin.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
     }
 }
+
+# ElasticSearch connection
+ELASTICSEARCH_DSL = {
+    'default': {
+        # elasticserach:9200 is the docker service and port
+        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
+        # 'hosts':'172.19.0.2:9200'
+    }
+}
+
+
+# SwiftStack connection
+SWIFT_AUTH_URL = "http://127.0.0.1:8080/auth/v1.0"
+SWIFT_USER = "test"
+SWIFT_PASSWORD = "test"
+SWIFT_CONTAINER = "container"
 
 
 # Password validation
@@ -123,7 +153,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
 TIME_ZONE = 'UTC'
 
@@ -148,15 +178,22 @@ BOOTSTRAP4 = {
     'include_jquery': True,
 }
 
-# TODO: modify when mail is created
 # Login and sign in with Google
+
+path_to_json = "/djangocms/credentials.json"
+
+with open(path_to_json, "r") as handler:
+    credentials = json.load(handler)
+
+gmail = credentials["gmail"]
+google_api = credentials["google_api"]
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '29904093278-iaj3igapi9g08jej17k82t4q9r1hn5mc.apps.googleusercontent.com',
-            'secret': 'ra8_YV39POu_Zgh2g_-0pWM-',
+            'client_id': google_api['client_id'],
+            'secret': google_api['secret'],
             'key': ''
         },
         'SCOPE': [
@@ -174,12 +211,27 @@ LOGIN_REDIRECT_URL = '/users/welcome'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'kaggleindjango@gmail.com'
-EMAIL_HOST_PASSWORD = 'Redes2019'
+EMAIL_HOST_USER = gmail['username']
+EMAIL_HOST_PASSWORD = gmail['password']
 EMAIL_PORT = 587
 
+# Save logs into files
 
-SWIFT_AUTH_URL = "http://127.0.0.1:8080/auth/v1.0"
-SWIFT_USER = "test"
-SWIFT_PASSWORD = "test"
-SWIFT_CONTAINER = "container"
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/djangocms/debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

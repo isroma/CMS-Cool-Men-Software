@@ -10,7 +10,13 @@ class Profile(models.Model):
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # Email is verified
     verified = models.BooleanField(default=False)
 
+    # ElasticSearch flags
+    general = models.BooleanField(default=False)
+    arquitectura = models.BooleanField(default=False)
+    django = models.BooleanField(default=False)
+
     def __str__(self):
-        return self.user.username
+        return f"{self.user}, {self.verified}"
