@@ -31,5 +31,6 @@ services:
     depends_on:
       - db
       - elasticsearch
+      - swiftstack
     links:
       - db:db
