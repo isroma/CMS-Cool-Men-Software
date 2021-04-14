@@ -1,5 +1,12 @@
+{% extends "base.html" %}
+{% block active_upload %} active {% endblock %}
+{% block color_upload %} style="color: #157ffb;" {% endblock %}
+{% load static %}
+{% block page_content %}
+
 <html>
     <body>
+        {% csrf_token %}
         <form action="{{ swift_url }}" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="redirect" value="{{ redirect_url }}" />
             <input type="hidden" name="max_file_size" value="{{ max_file_size }}" />
@@ -11,3 +18,5 @@
         </form>
     </body>
 </html>
+
+{% endblock %}
