@@ -58,14 +58,6 @@ INSTALLED_APPS = [
     'search'
 ]
 
-ELASTICSEARCH_DSL = {
-    'default': {
-        # elasticserach:9200 is the docker service and port
-        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
-        # 'hosts':'172.19.0.2:9200'
-    }
-}
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -121,6 +113,22 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
+# ElasticSearch connection
+ELASTICSEARCH_DSL = {
+    'default': {
+        # elasticserach:9200 is the docker service and port
+        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
+        # 'hosts':'172.19.0.2:9200'
+    }
+}
+
+
+# SwiftStack connection
+SWIFT_AUTH_URL = "http://172.19.0.4:8080/auth/v1.0"
+SWIFT_USER = "test"
+SWIFT_PASSWORD = "test"
+SWIFT_CONTAINER = "container"
 
 
 # Password validation
@@ -206,7 +214,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = gmail['username']
 EMAIL_HOST_PASSWORD = gmail['password']
 EMAIL_PORT = 587
-
 
 # Save logs into files
 

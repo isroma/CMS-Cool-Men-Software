@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block active_upload %} active {% endblock %}
+{% block color_upload %} style="color: #157ffb;" {% endblock %}
+{% load static %}
+{% block page_content %}
+
+<html>
+    <body>
+        {% csrf_token %}
+        <form action="{{ swift_url }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="redirect" value="{{ redirect_url }}" />
+            <input type="hidden" name="max_file_size" value="{{ max_file_size }}" />
+            <input type="hidden" name="max_file_count" value="{{ max_file_count }}" />
+            <input type="hidden" name="expires" value="{{ expires }}" />
+            <input type="hidden" name="signature" value="{{ signature }}" />
+            <input type="file" name="file1" id="file" /><br /><br />
+            <button type="submit">Upload</button>
+        </form>
+    </body>
+</html>
+
+{% endblock %}
