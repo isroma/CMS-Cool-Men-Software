@@ -30,6 +30,12 @@
           </a>
         </li>
         <li class="nav-item pr-2">
+          <a class="nav-link {% block active_upload %}{% endblock %}" href="{% url 'upload' %}">
+            <span class="fa fa-upload pr-2" {% block color_upload %}{% endblock %}></span>
+            Subida
+          </a>
+        </li>
+        <li class="nav-item pr-2">
           <a class="nav-link {% block active_search %}{% endblock %}" href="{% url 'search' %}">
             <span class="fa fa-search pr-2" {% block color_search %}{% endblock %}></span>
             Búsqueda
