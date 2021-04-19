@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+{% block page_content %}
+
+<body>
+   <div class="container">
+      <div class="col-md-6 mx-auto text-center pt-2 pb-3">
+         <h1 style="font-size: 35;">
+            Iniciar sesión
+         </h1>
+      </div>
+      <div class="row">
+         <div class="col-md-4 mx-auto">
+            {% if error_message %}
+            <p class="alert alert-warning" role="alert">{{ error_message }}</p>
+            {% endif %}
+            <div class="myform form">
+               <form action="{% url 'login' %}" method="post">
+                  {% csrf_token %}
+                  <div class="form-group">
+                     <div>
+                        {{ form.as_p }}
+                     </div>
+                  </div>
+                  <div class="text-center pt-2">
+                     <button type="submit" class="btn btn-block login-button" style="padding: 8px 25px;">
+                        Iniciar sesión</button>
+                  </div>
+                  <div class="col-md-12">
+                     <div class="login-or">
+                        <hr class="hr-or">
+                        <span class="span-or">o</span>
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <a class="btn btn-block g-button" href="{% provider_login_url 'google' %}">
+                        <i class="fa fa-google pr-1"></i> Iniciar sesión con Google
+                     </a>
+                  </div>
+                  <p class="small mt-3 text-center"><a href="{% url 'recover_password' %}">¿Has olvidado tu contraseña?</a></p>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+</body>
+
+{% endblock %}

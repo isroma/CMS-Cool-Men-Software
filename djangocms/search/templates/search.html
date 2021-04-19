@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block active_search %} active {% endblock %}
+{% block color_search %} style="color: #157ffb;" {% endblock %}
+{% load static %}
+{% block page_content %}
+
+<form method='get'>
+    <input id='q' name='q' type='text' placeholder="Tu búsqueda...">
+    <select name="indice" id="id">
+        {% if request.user.profile.general or request.user.is_staff %}
+        <option value="general"> General </option>
+        {% endif %}
+        {% if request.user.profile.arquitectura or request.user.is_staff %}
+        <option value="arquitectura" selected> Arquitectura </option>
+        {% endif %}
+        {% if request.user.profile.django or request.user.is_staff %}
+        <option value="django"> Django </option>
+        {% endif %}
+    </select>
+      <div>
+        <button type="submit">Submit</button>
+      </div>
+</form>
+  
+{% for item in posts %}
+  {{ item.titulo }}
+  {{ item.descripcion }}
+{% endfor %}
+
+{% endblock %}

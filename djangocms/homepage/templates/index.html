@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block active_index %} active {% endblock %}
+{% block color_index %} style="color: #157ffb;" {% endblock %}
+{% load static %}
+{% block page_content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+<div class="container">
+	<div class="user-container">
+		<div class="panel" id="panel">
+			<div class="component">
+				<img src="{% static 'img/file.png' %}" alt="Fichero" class="image" >
+				<p> prueba.txt </p>
+			</div>
+			<div class="component">
+				<img src="{% static 'img/imagen.png' %}" alt="Imagen" class="image" >
+				<p> prueba.png </p>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div>
+			<button onclick="sendFile()">
+				Texto
+			</button>
+			<button onclick="sendImagen()">
+				Imagen
+			</button>
+		</div>
+	</div>
+</div>
+
+
+<!-- @TODO falta implementarlo con Django, es solo una demo no me mateis :( -->
+<script>
+	function sendFile() {
+		var type = "{% static 'img/file.png' %}";
+		var name = "Prueba1.txt";
+		const fileHTML = 
+		`
+			<div class="component">
+				<img src="${type}" alt="Archivo" class="image" >
+				<p> ${name} </p>
+			</div>
+		`;
+		$("#panel").append(fileHTML);
+	}
+
+	function sendImagen() {
+		var tipo = "{% static 'img/imagen.png' %}";
+		var name = "Prueba1.txt";
+		const fileHTML = 
+		`
+			<div class="component">
+				<img src="${tipo}" alt="Imagen" class="image" >
+				<p> ${name} </p>
+			</div>
+		`;
+		$("#panel").append(fileHTML);
+	}
+
+	function exampleTika(){
+		console.log("running");
+		$.ajax({
+			url : "random_url/", // the endpoint
+			type : "GET", // http method
+			data : {}, // data sent with the get request
+
+			// handle a successful response
+			success : function(json) {
+				console.log(json["content"]); // another sanity check
+			},
+
+			// handle a non-successful response
+			error : function(xhr,errmsg,err) {
+				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+			}
+		})
+	}
+
+</script>
+
+{% endblock %}
