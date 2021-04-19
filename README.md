@@ -30,7 +30,9 @@ pip3 freeze > requirements.txt
 
 Se debería crear una rama por cada ticket a realizar.
 
-**Nomenclatura**
+https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
+
+# Nomenclatura de ramas
 
 - style/ : si es algo de diseño
 - bugfix/ : resolucion de errores
@@ -123,3 +125,4 @@ Estructura para entender Django
     │   ├── manage.py             | script to execute django commands
     │   ├── requirements.txt      | all requirements
     └── README.md
+    
