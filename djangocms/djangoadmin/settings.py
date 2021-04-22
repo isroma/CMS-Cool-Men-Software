@@ -27,7 +27,8 @@ SECRET_KEY = 'baoxsiue+$!avor&00-jhuwx-l*ega+r!!f%36!sluo-hryz^s'
 DEBUG = True
 
 # All local hosts
-ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0']
+
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -115,6 +116,7 @@ DATABASES = {
 }
 
 # ElasticSearch connection
+
 ELASTICSEARCH_DSL = {
     'default': {
         # elasticserach:9200 is the docker service and port
@@ -125,6 +127,7 @@ ELASTICSEARCH_DSL = {
 
 
 # SwiftStack connection
+
 SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
 SWIFT_USER = "test"
 SWIFT_PASSWORD = "test"
@@ -189,6 +192,7 @@ gmail = credentials["gmail"]
 google_api = credentials["google_api"]
 
 # Provider specific settings
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
