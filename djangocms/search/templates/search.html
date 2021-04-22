@@ -6,19 +6,20 @@
 
 <form method='get'>
     <input id='q' name='q' type='text' placeholder="Tu búsqueda...">
-    <select name="indice" id="id">
-        <option value="general"> General </option>
-        <option value="arquitectura" selected> Arquitectura </option>
-        <option value="django"> Django </option>
-    </select>
+    {% for role in roles %}
+      <input type="checkbox" name="indice" value={{role}} id="id">
+        <label for={{role}}> {{ role }} </label>
+    {% endfor %}
       <div>
         <button type="submit">Submit</button>
       </div>
 </form>
-  
+
 {% for item in posts %}
-  {{ item.titulo }}
-  {{ item.descripcion }}
+    {% if item.indice == id %}
+    {{ item.titulo }}
+    {{ item.descripcion }}
+  {% endif %}
 {% endfor %}
 
 {% endblock %}
