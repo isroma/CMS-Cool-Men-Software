@@ -7,11 +7,6 @@ services:
     ports: 
       - "8080:8080"
 
-  elasticsearch:
-    image: bitnami/elasticsearch
-    ports:
-      - "9200:31000"
-
   db:
     image: postgres
     volumes:
@@ -30,7 +25,7 @@ services:
       - "5432:5432"
     depends_on:
       - db
-      - elasticsearch
       - swiftstack
     links:
       - db:db
+    # network_mode: host

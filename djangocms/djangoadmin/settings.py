@@ -114,12 +114,26 @@ DATABASES = {
     }
 }
 
+from urllib.parse import quote_plus as urlquote
+
+elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
+elastic_search_url = elk_base_url.format(user_name='elastic',
+                                         password=urlquote('Zcj7qNHKs90Cy0641k62WUW3'),
+                                         # password may contain special characters
+                                         host_ip='localhost',
+                                         host_port=9200)
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': [elastic_search_url]
+    },
+}
+
 # ElasticSearch connection
 ELASTICSEARCH_DSL = {
     'default': {
         # elasticserach:9200 is the docker service and port
-        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
-        # 'hosts':'172.19.0.2:9200'
+        # 'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
+        'hosts': 'localhost:9200'
     }
 }
 
