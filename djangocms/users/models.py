@@ -13,10 +13,5 @@ class Profile(models.Model):
     # Email is verified
     verified = models.BooleanField(default=False)
 
-    # ElasticSearch flags
-    general = models.BooleanField(default=False)
-    arquitectura = models.BooleanField(default=False)
-    django = models.BooleanField(default=False)
-
     def __str__(self):
         return f"{self.user}, {self.verified}"
