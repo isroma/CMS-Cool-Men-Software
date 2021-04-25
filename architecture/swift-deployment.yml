@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swift-deployment
+  namespace: elastic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swift-container
+  template:
+    metadata:
+      labels:
+        app: swift-container
+    spec:
+      containers:
+        - name: swift-container
+          image: swiftstack/picoswiftstack
+          ports:
+            - containerPort: 8080
