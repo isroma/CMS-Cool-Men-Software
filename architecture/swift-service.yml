@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: swift-service
+  namespace: elastic
+spec:
+  type: ClusterIP
+  selector:
+    app: swift-container
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

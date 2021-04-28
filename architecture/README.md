@@ -96,3 +96,7 @@ Elastic nos deberia de responder algo parecido a esto:
   },
   "tagline" : "You Know, for Search"
 }
+
+minikube service django-service -n elastic
+https://medium.com/swlh/how-to-run-locally-built-docker-images-in-kubernetes-b28fbc32cc1d
+ALLOWED HOSTS

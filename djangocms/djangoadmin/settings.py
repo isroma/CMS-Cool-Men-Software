@@ -27,7 +27,7 @@ SECRET_KEY = 'baoxsiue+$!avor&00-jhuwx-l*ega+r!!f%36!sluo-hryz^s'
 DEBUG = True
 
 # All local hosts
-ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0']
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0', '192.168.49.2']
 
 
 # Application definition
@@ -124,7 +124,7 @@ ELASTICSEARCH_DSL = {
 }
 
 # SwiftStack connection
-SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
+SWIFT_AUTH_URL = "swiftstack-service:8080/auth/v1.0"
 SWIFT_USER = "test"
 SWIFT_PASSWORD = "test"
 SWIFT_CONTAINER = "container"
