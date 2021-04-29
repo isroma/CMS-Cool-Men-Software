@@ -123,7 +123,7 @@ ELASTICSEARCH_DSL = {
 }
 
 # SwiftStack connection
-SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
+SWIFT_AUTH_URL = "http://swift-service:8080/auth/v1.0"
 SWIFT_USER = "test"
 SWIFT_PASSWORD = "test"
 SWIFT_CONTAINER = "container"
