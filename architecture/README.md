@@ -63,17 +63,17 @@ En un principio, antes de incorporar el resto de componentes al cluster de Kuber
 
 Elastic de forma predeterminada crea un usuario con el cual podemos hacer uso del cluster de Elastic. Su nombre es elastic. Para conseguir su contraseña:
 
-    `kubectl get secret quickstart-es-elastic-user -o go-template='{{.data.elastic | base64decode}}'`
+   `kubectl get secret quickstart-es-elastic-user -o go-template='{{.data.elastic | base64decode}}'`
 
 7. Acceder al endpoint de Elastic
 
 Para acceder desde fuera del cluster, primero tenemos que correr este comando en una terminal independiente:
 
-    `kubectl port-forward service/quickstart-es-http 9200 -n elastic`
+   `kubectl port-forward service/quickstart-es-http 9200 -n elastic`
 
 Ahora, con el usuario y la contraseña que hemos obtenido anteriormente, podemos hacerle peticiones a Elastic:
 
-    `curl -u "elastic:$PASSWORD" -k "https://localhost:9200"`
+   `curl -u "elastic:$PASSWORD" -k "https://localhost:9200"`
 
 NOTA: La contraseña que hemos obtenido para elastic la hemos guardado en la variable de entorno $PASSWORD
 
@@ -96,3 +96,7 @@ Elastic nos deberia de responder algo parecido a esto:
   },
   "tagline" : "You Know, for Search"
 }
+
+minikube service django-service -n elastic
+https://medium.com/swlh/how-to-run-locally-built-docker-images-in-kubernetes-b28fbc32cc1d
+ALLOWED HOSTS

@@ -27,9 +27,7 @@ SECRET_KEY = 'baoxsiue+$!avor&00-jhuwx-l*ega+r!!f%36!sluo-hryz^s'
 DEBUG = True
 
 # All local hosts
-
-ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1']
-
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0', '192.168.49.2']
 
 # Application definition
 
@@ -101,34 +99,31 @@ WSGI_APPLICATION = 'djangoadmin.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'db',
+        'HOST': 'postgres-service',
         'PORT': 5432,
     }
 }
 
-# ElasticSearch connection
+from urllib.parse import quote_plus as urlquote
 
+elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
+elastic_search_url = elk_base_url.format(user_name='elastic',
+                                         password=urlquote('Zcj7qNHKs90Cy0641k62WUW3'),
+                                         host_ip='quickstart-es-http',
+                                         host_port=9200)
 ELASTICSEARCH_DSL = {
     'default': {
-        # elasticserach:9200 is the docker service and port
-        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
-        # 'hosts':'172.19.0.2:9200'
-    }
+        'hosts': [elastic_search_url]
+    },
 }
 
-
 # SwiftStack connection
-
-SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
+SWIFT_AUTH_URL = "http://swift-service:8080/auth/v1.0"
 SWIFT_USER = "test"
 SWIFT_PASSWORD = "test"
 SWIFT_CONTAINER = "container"
