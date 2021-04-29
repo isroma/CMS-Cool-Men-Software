@@ -17,8 +17,11 @@ __pycache__
 .vscode
 .pytest_cache
 
-# postgresql
+# postgresql if used with docker
 djangocms/data/
+
+# logs (now on Kibana)
+djangocms/debug.log
 
 # credentials
 djangocms/credentials.json
