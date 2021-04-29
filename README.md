@@ -62,7 +62,7 @@ Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el cont
       ```
   2. Dar permisos a docker-entrypoint.sh para que pueda ejecutarse al lanzar Docker
       ```
-      chmod +x /docker-entrypoint.sh
+      chmod +x docker-entrypoint.sh
       ```
   4. Hacer la build del container y las imágenes
       ``` 

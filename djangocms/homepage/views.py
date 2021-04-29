@@ -76,7 +76,7 @@ def download(request, pk):
     so = StorageObject.objects.get(pk=pk)
 
     storage_url, key = get_tempurl_key()
-    storage_url = "http://0.0.0.0:8080/v1/AUTH_test"
+    storage_url = storage_url.replace("swiftstack", "localhost")
     url = "%s/%s/%s" % (storage_url, so.container, so.objectname)
 
     expires = int(time.time() + 60)
@@ -91,8 +91,7 @@ def download(request, pk):
 
 def upload(request):
     storage_url, key = get_tempurl_key()
-    # TODO: this can be done better
-    storage_url = "http://0.0.0.0:8080/v1/AUTH_test"
+    storage_url = storage_url.replace("swiftstack", "localhost")
     prefix = str(uuid.uuid4())
 
     # In a real-world scenario you might want to record the prefix in a DB

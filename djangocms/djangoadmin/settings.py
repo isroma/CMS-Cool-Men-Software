@@ -29,7 +29,6 @@ DEBUG = True
 # All local hosts
 ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0', '192.168.49.2']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -124,7 +123,7 @@ ELASTICSEARCH_DSL = {
 }
 
 # SwiftStack connection
-SWIFT_AUTH_URL = "swiftstack-service:8080/auth/v1.0"
+SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
 SWIFT_USER = "test"
 SWIFT_PASSWORD = "test"
 SWIFT_CONTAINER = "container"
@@ -188,6 +187,7 @@ gmail = credentials["gmail"]
 google_api = credentials["google_api"]
 
 # Provider specific settings
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
