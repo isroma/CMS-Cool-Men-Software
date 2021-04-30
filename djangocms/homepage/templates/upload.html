@@ -45,6 +45,9 @@
                 <span class="progress-bar-text">0%</span>
             </div>
         </div>
+
+        <div id ="link">        
+        </div>
     </body>
 </html>
 
@@ -69,6 +72,13 @@
             
             progressBarFill.style.width = percent.toFixed(2) + "%";
             progressBarText.textContent = percent.toFixed(2) + "%";
+        });
+
+        xhr.upload.addEventListener("load", e => {
+            $(document).ready( function() {
+                $("#link").load("{{ redirect_url }}");
+                //console.log(xhr.response);
+            });
         });
         
         xhr.send(new FormData(uploadForm));
