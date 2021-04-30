@@ -32,7 +32,7 @@ services:
       - "5432:5432"
     depends_on:
       - db
-      - elasticseach
+      - elasticsearch
       - swiftstack
     links:
       - db:db
