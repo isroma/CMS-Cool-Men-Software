@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     # Our apps
     'users',
     'homepage',
-    'search'
+    'search',
+    'upload'
 ]
 
 MIDDLEWARE = [
