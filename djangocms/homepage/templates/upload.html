@@ -4,19 +4,85 @@
 {% load static %}
 {% block page_content %}
 
+<style>
+    .progress-bar {
+        height: 35px;
+        width: 250px;
+        border: 2px solid darkblue;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: lightblue;
+        display: flex;
+        align-items: center;
+        transition: width 0.25s;
+    }
+
+    .progress-bar-text {
+        margin-left: 10px;
+        font-weight: bold;
+    }
+</style>
+
 <html>
     <body>
-        {% csrf_token %}
-        <form action="{{ swift_url }}" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="redirect" value="{{ redirect_url }}" />
-            <input type="hidden" name="max_file_size" value="{{ max_file_size }}" />
-            <input type="hidden" name="max_file_count" value="{{ max_file_count }}" />
-            <input type="hidden" name="expires" value="{{ expires }}" />
-            <input type="hidden" name="signature" value="{{ signature }}" />
-            <input type="file" name="file1" id="file" /><br /><br />
+        <!--<form  action="{{ swift_url }}" method="POST" enctype="multipart/form-data">-->  
+        <form  class="form" id="uploadForm" enctype="multipart/form-data">  
+            <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
+            <input type="hidden" name="redirect" value="{{ redirect_url }}">
+            <input type="hidden" name="max_file_size" value="{{ max_file_size }}">
+            <input type="hidden" name="max_file_count" value="{{ max_file_count }}">
+            <input type="hidden" name="expires" value="{{ expires }}">
+            <input type="hidden" name="signature" value="{{ signature }}">
+            <input type="file" name="inpFile" id="inpFile"><br>
             <button type="submit">Upload</button>
         </form>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-bar-fill">
+                <span class="progress-bar-text">0%</span>
+            </div>
+        </div>
+
+        <div id ="link">        
+        </div>
     </body>
 </html>
+
+
+<script>
+    const uploadForm = document.getElementById("uploadForm");
+    const inpFile = document.getElementById("inpFile");
+    const progressBarFill = document.querySelector("#progressBar > .progress-bar-fill");
+    const progressBarText = progressBarFill.querySelector(".progress-bar-text");
+
+    uploadForm.addEventListener("submit", uploadFile);
+
+    function uploadFile (e) {
+        e.preventDefault();
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("POST", "{{ swift_url }}", true);
+        xhr.responseType = 'document';
+        xhr.upload.addEventListener("progress", e => {
+            const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
+            
+            progressBarFill.style.width = percent.toFixed(2) + "%";
+            progressBarText.textContent = percent.toFixed(2) + "%";
+        });
+
+        xhr.upload.addEventListener("load", e => {
+            $(document).ready( function() {
+                $("#link").load("{{ redirect_url }}");
+                //console.log(xhr.response);
+            });
+        });
+        
+        xhr.send(new FormData(uploadForm));
+    }
+</script>
 
 {% endblock %}

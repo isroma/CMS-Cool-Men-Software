@@ -1,6 +1,3 @@
-{% extends "base.html" %}
-{% block active_index %} active {% endblock %}
-{% block color_index %} style="color: #157ffb;" {% endblock %}
 {% load static %}
 {% block page_content %}
 
@@ -10,7 +7,7 @@
         {% for id in ids %}
             <a href="{% url 'download' id %}">http://{{ host }}{% url 'download' id %}</a>
         {% endfor %}
-        <a href="{% url 'upload' %}">New upload</a>
+        <!-- <a href="{% url 'upload' %}">New upload</a> -->
     </body>
 </html>
 

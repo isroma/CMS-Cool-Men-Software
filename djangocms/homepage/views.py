@@ -101,7 +101,7 @@ def upload(request):
     # For example, run a periodic job that iterates over unused prefixes and
     # check Swift if there are unreferenced uploads
 
-    max_file_size = 5*1024*1024
+    max_file_size = 5*1024*1024*1024
     max_file_count = 1
     expires = int(time.time() + 5*60)
     swift_url = "%s/%s/%s/" % (storage_url, settings.SWIFT_CONTAINER, prefix)
