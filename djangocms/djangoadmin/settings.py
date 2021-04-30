@@ -98,41 +98,6 @@ AUTHENTICATION_BACKENDS = (
 
 WSGI_APPLICATION = 'djangoadmin.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'postgres-service',
-        'PORT': 5432,
-    }
-}
-
-from urllib.parse import quote_plus as urlquote
-
-elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
-elastic_search_url = elk_base_url.format(user_name='elastic',
-                                         password=urlquote('Zcj7qNHKs90Cy0641k62WUW3'),
-                                         host_ip='quickstart-es-http',
-                                         host_port=9200)
-ELASTICSEARCH_DSL = {
-    'default': {
-        'hosts': [elastic_search_url]
-    },
-}
-
-# SwiftStack connection
-SWIFT_AUTH_URL = "http://swift-service:8080/auth/v1.0"
-SWIFT_USER = "test"
-SWIFT_PASSWORD = "test"
-SWIFT_CONTAINER = "container"
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -151,7 +116,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -164,7 +128,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -238,3 +201,86 @@ LOGGING = {
         },
     },
 }
+
+# ************************************************************************
+# Kubernetes connections *************************************************
+# !IMPORTANT: comment either Kubernetes block or Docker depending of
+# which version are you going to use
+
+# PostgreSQL
+# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'HOST': 'postgres-service',
+#         'PORT': 5432,
+#     }
+# }
+
+# ElasticSearch
+
+# from urllib.parse import quote_plus as urlquote
+
+# elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
+# elastic_search_url = elk_base_url.format(user_name='elastic',
+#                                          password=urlquote('Zcj7qNHKs90Cy0641k62WUW3'),
+#                                          host_ip='quickstart-es-http',
+#                                          host_port=9200)
+# ELASTICSEARCH_DSL = {
+#     'default': {
+#         'hosts': [elastic_search_url]
+#     },
+# }
+
+# SwiftStack 
+
+# SWIFT_AUTH_URL = "http://swift-service:8080/auth/v1.0"
+# SWIFT_USER = "test"
+# SWIFT_PASSWORD = "test"
+# SWIFT_CONTAINER = "container"
+
+# ************************************************************************
+# Docker connections *****************************************************
+# !IMPORTANT: comment either Kubernetes block or Docker depending of
+# which version are you going to use
+
+# PostgreSQL
+# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
+DATABASES = {
+    # SQLite connection
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+    # PostgreSQL connection
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
+    }
+}
+
+# ElasticSearch
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        # elasticserach:9200 is the docker service and port
+        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
+        # 'hosts':'172.19.0.2:9200'
+    }
+}
+
+# SwiftStack
+
+SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
+SWIFT_USER = "test"
+SWIFT_PASSWORD = "test"
+SWIFT_CONTAINER = "container"

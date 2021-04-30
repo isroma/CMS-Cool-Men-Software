@@ -11,19 +11,17 @@ roles = Role.objects.all()
 @registry.register_document
 class PostDocument(Document):
     class Index:
-        def create_indexes(self):
-            for role in roles:
-                name = role
-                settings = {
-                    'number_of_shards': 1,
-                    'number_of_replicas': 0
-                }
+        name = "cms"
+        settings = {
+            'number_of_shards': 1,
+            'number_of_replicas': 0
+        }
 
     class Django:
         model = Post
 
         fields = [
-            'id', 'indice','titulo', 'descripcion','order','slug'
+            'id', 'roles', 'indice', 'titulo', 'descripcion', 'order', 'slug'
         ]
         
 
@@ -31,8 +29,12 @@ def search(request):
     q = request.GET.get('q')
     id = request.GET.get('indice')
 
-    mq = MultiMatch(query=q, fields=['titulo', 'descripcion'], fuzziness='AUTO')
-    posts = PostDocument.search(index=id).query(mq)
+    if id is None:
+        posts = ''
+
+    else:
+        mq = MultiMatch(query=q, fields=['titulo', 'descripcion'], fuzziness='AUTO')
+        posts = PostDocument.search(index='cms').query(mq)
 
     context = {
         'posts': posts,

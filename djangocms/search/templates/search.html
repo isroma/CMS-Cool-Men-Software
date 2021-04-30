@@ -16,7 +16,7 @@
 </form>
 
 {% for item in posts %}
-    {% if item.indice == id %}
+  {% if item.roles == id %}
     {{ item.titulo }}
     {{ item.descripcion }}
   {% endif %}
