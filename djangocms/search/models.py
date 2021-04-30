@@ -1,11 +1,13 @@
 from django.db import models
 from django.utils.text import slugify
+# from users.models import Role
 
 # Create your models here.
 
 class Post(models.Model):
     
-    indice =models.CharField(max_length=255,blank=True,null=True)
+    indice = models.CharField(max_length=255,blank=True,null=True)
+    roles = models.CharField(max_length=255,blank=True,null=True)
     titulo = models.CharField(max_length=255,blank=True,null=True)
     descripcion = models.TextField(blank=True,null=True)
     order = models.IntegerField(blank=True,null=True)
