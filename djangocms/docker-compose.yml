@@ -23,6 +23,11 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  tika:
+    image: apache/tika:1.25
+    ports:
+      - "9998:9998"
+
   web:
     build: .
     entrypoint: ./docker-entrypoint.sh
@@ -34,5 +39,6 @@ services:
       - db
       - elasticsearch
       - swiftstack
+      - tika
     links:
       - db:db
