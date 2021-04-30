@@ -21,7 +21,7 @@ class PostDocument(Document):
         model = Post
 
         fields = [
-            'id', 'roles', 'indice', 'titulo', 'descripcion', 'order', 'slug'
+            'id', 'roles', 'indice', 'titulo', 'descripcion', 'metadata', 'contenido', 'url', 'order', 'slug'
         ]
         
 
