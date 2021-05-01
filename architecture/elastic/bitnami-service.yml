@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: elastic-service
+  namespace: elastic
+spec:
+  type: ClusterIP
+  selector:
+    app: elastic-container
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
