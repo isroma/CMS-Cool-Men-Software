@@ -111,15 +111,15 @@ DATABASES = {
 
 from urllib.parse import quote_plus as urlquote
 
-elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
-elastic_search_url = elk_base_url.format(user_name='elastic',
-                                         password=urlquote('Zcj7qNHKs90Cy0641k62WUW3'),
-                                         host_ip='quickstart-es-http',
-                                         host_port=9200)
+# elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
+# elastic_search_url = elk_base_url.format(user_name='elastic',
+#                                          password=urlquote('Zcj7qNHKs90Cy0641k62WUW3'),
+#                                          host_ip='quickstart-es-http',
+#                                          host_port=9200)
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': [elastic_search_url]
-    },
+        'hosts': "elastic-service:9200"
+    }
 }
 
 # SwiftStack connection
