@@ -242,32 +242,32 @@ LOGGING = {
 
 # PostgreSQL
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql',
-         'NAME': 'postgres',
-         'USER': 'postgres',
-         'PASSWORD': 'postgres',
-         'HOST': 'postgres-service',
-         'PORT': 5432,
-     }
- }
-
-# ElasticSearch
-
-ELASTICSEARCH_DSL = {
-     'default': {
-         'hosts': 'elastic-service:9200'
-     },
- }
-
-# SwiftStack 
-
-SWIFT_AUTH_URL = "http://swift-service:8080/auth/v1.0"
-SWIFT_USER = "test"
-SWIFT_PASSWORD = "test"
-SWIFT_CONTAINER = "container"
+#
+# DATABASES = {
+#      'default': {
+#          'ENGINE': 'django.db.backends.postgresql',
+#          'NAME': 'postgres',
+#          'USER': 'postgres',
+#          'PASSWORD': 'postgres',
+#          'HOST': 'postgres-service',
+#          'PORT': 5432,
+#      }
+#  }
+#
+# # ElasticSearch
+#
+# ELASTICSEARCH_DSL = {
+#      'default': {
+#          'hosts': 'elastic-service:9200'
+#      },
+#  }
+#
+# # SwiftStack
+#
+# SWIFT_AUTH_URL = "http://swift-service:8080/auth/v1.0"
+# SWIFT_USER = "test"
+# SWIFT_PASSWORD = "test"
+# SWIFT_CONTAINER = "container"
 
 # ************************************************************************
 # Docker connections *****************************************************
@@ -277,36 +277,36 @@ SWIFT_CONTAINER = "container"
 # PostgreSQL
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-# DATABASES = {
-#     # SQLite connection
-#     # 'default': {
-#     #     'ENGINE': 'django.db.backends.sqlite3',
-#     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     # }
-#     # PostgreSQL connection
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'PASSWORD': 'postgres',
-#         'HOST': 'db',
-#         'PORT': 5432,
-#     }
-# }
+DATABASES = {
+    # SQLite connection
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+    # PostgreSQL connection
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
+    }
+}
 
 # ElasticSearch
 
-# ELASTICSEARCH_DSL = {
-#     'default': {
-#         # elasticserach:9200 is the docker service and port
-#         'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
-#         # 'hosts':'172.19.0.2:9200'
-#     }
-# }
-#
-# # SwiftStack
-#
-# SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
-# SWIFT_USER = "test"
-# SWIFT_PASSWORD = "test"
-# SWIFT_CONTAINER = "container"
+ELASTICSEARCH_DSL = {
+    'default': {
+        # elasticserach:9200 is the docker service and port
+       'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
+        # 'hosts':'172.19.0.2:9200'
+    }
+}
+
+# SwiftStack
+
+SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
+SWIFT_USER = "test"
+SWIFT_PASSWORD = "test"
+SWIFT_CONTAINER = "container"
