@@ -285,3 +285,7 @@ SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
 SWIFT_USER = "test"
 SWIFT_PASSWORD = "test"
 SWIFT_CONTAINER = "container"
+
+# Tika
+
+TIKA_URL = "http://tika:9998/tika"

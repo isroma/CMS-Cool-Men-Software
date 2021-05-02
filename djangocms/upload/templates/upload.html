@@ -48,11 +48,38 @@
 
         <div id ="link">        
         </div>
+
+        <button onclick=exampleTika()>Example</button>
+
+        <div id ="result">        
+        </div>
+
     </body>
 </html>
 
 
 <script>
+
+    function exampleTika(){
+		console.log("running");
+		$.ajax({
+			url : "random_url/", // the endpoint
+			type : "GET", // http method
+			data : {}, // data sent with the get request
+
+			// handle a successful response
+			success : function(json) {
+				console.log(json["content"]); // another sanity check
+			},
+
+			// handle a non-successful response
+			error : function(xhr,errmsg,err) {
+				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+			}
+		})
+	}
+
+
     const uploadForm = document.getElementById("uploadForm");
     const inpFile = document.getElementById("inpFile");
     const progressBarFill = document.querySelector("#progressBar > .progress-bar-fill");
@@ -62,6 +89,28 @@
 
     function uploadFile (e) {
         e.preventDefault();
+
+        $.ajax({
+            url : "http://localhost:9998/tika", // the endpoint
+            type : "POST", // http method
+            target: '#result',
+            headers: {"X-CSRFToken" : "{{ csrf_token }}"},
+            data : {'data' : $('#inpFile').val()}, // data sent with the get request
+
+            success: function(responseText, statusText, xhr, $form) {
+                $("#result").html(responseText);
+                $('#result').show();
+            },
+            beforeSerialize: function($form, options) {
+                $("#result").html("<span class=\"glyphicon glyphicon-refresh spinning\"></span> Loading...");
+                $("#result").show();
+            },
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+            }
+		}); 
 
         const xhr = new XMLHttpRequest();
 

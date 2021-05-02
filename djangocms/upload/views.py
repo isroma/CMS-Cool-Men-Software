@@ -27,7 +27,7 @@ def tika(request):
         # Receive tika data on XHTML format
         # response_data = parser.from_file('/home/frias/sample.pdf', xmlContent=True)
         # Receive tika data on plain text format
-        response_data = parser.from_file('/home/frias/sample.pdf')
+        response_data = parser.from_file('credentials.json', settings.TIKA_URL)
 
         # Cleaning of ends of line at the start of the plain text content received from Tika. DO NOT USE WITH XHTML FORMAT.
         response_data['content'] = re.sub('[\n]{1,}', '', response_data["content"], 1)
