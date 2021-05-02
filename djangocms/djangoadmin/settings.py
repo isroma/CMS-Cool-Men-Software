@@ -284,4 +284,4 @@ SWIFT_CONTAINER = "container"
 
 # Tika
 
-TIKA_URL = "http://tika:9998/tika"
+TIKA_URL = "http://localhost:9998/"

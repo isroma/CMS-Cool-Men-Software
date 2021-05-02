@@ -27,6 +27,10 @@ services:
     image: apache/tika:1.25
     ports:
       - "9998:9998"
+    command:
+      - run
+      - --cors
+      - "*"
 
   web:
     build: .
