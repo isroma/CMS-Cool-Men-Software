@@ -49,7 +49,7 @@
         <div id ="link">        
         </div>
 
-        <button onclick=exampleTika()>Example</button>
+        <!-- <button onclick=exampleTika()>Example</button> -->
 
         <div id ="result">        
         </div>
@@ -59,26 +59,24 @@
 
 
 <script>
+    // function exampleTika(){
+	// 	console.log("running");
+	// 	$.ajax({
+	// 		url : "tika/", // the endpoint
+	// 		type : "GET", // http method
+	// 		data : {}, // data sent with the get request
 
-    function exampleTika(){
-		console.log("running");
-		$.ajax({
-			url : "random_url/", // the endpoint
-			type : "GET", // http method
-			data : {}, // data sent with the get request
+	// 		// handle a successful response
+	// 		success : function(json) {
+	// 			console.log(json["content"]); // another sanity check
+	// 		},
 
-			// handle a successful response
-			success : function(json) {
-				console.log(json["content"]); // another sanity check
-			},
-
-			// handle a non-successful response
-			error : function(xhr,errmsg,err) {
-				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-			}
-		})
-	}
-
+	// 		// handle a non-successful response
+	// 		error : function(xhr,errmsg,err) {
+	// 			console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+	// 		}
+	// 	})
+	// }
 
     const uploadForm = document.getElementById("uploadForm");
     const inpFile = document.getElementById("inpFile");
@@ -91,7 +89,7 @@
         e.preventDefault();
 
         $.ajax({
-            url : "http://localhost:9998/tika", // the endpoint
+            url : "http://localhost:9998/", // the endpoint
             type : "POST", // http method
             target: '#result',
             headers: {"X-CSRFToken" : "{{ csrf_token }}"},
