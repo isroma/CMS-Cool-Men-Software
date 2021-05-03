@@ -28,9 +28,13 @@ services:
     ports:
       - "9998:9998"
     command:
-      - run
-      - --cors
-      - "*"
+      # - --help
+      - --cors "http://localhost:5432"
+      # --help says this should work, but it doesn't
+      # - --cors "all"
+      - -enableFileUrl
+      - --enableUnsecureFeatures
+      - --includeStack
 
   web:
     build: .
