@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django_elasticsearch_dsl import Document
+from django_elasticsearch_dsl import Document, Date, Integer, Keyword, Text
 from django_elasticsearch_dsl.registries import registry
 from elasticsearch_dsl.query import MultiMatch
 from search.models import Post

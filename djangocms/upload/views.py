@@ -20,6 +20,10 @@ from urllib.parse import urlparse
 from swiftclient import client
 from tika import parser
 from upload.models import StorageObject
+from upload.forms import ElasticForm
+
+from search.views import PostDocument
+
 
 def tika(request):
     if request.method == 'GET':
@@ -87,6 +91,8 @@ def download(request, pk):
 
 
 def upload(request):
+    form = ElasticForm(request.POST)
+
     storage_url, key = get_tempurl_key()
     storage_url = storage_url.replace("swiftstack", "localhost")
     prefix = str(uuid.uuid4())
@@ -111,11 +117,24 @@ def upload(request):
     context = {
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
-        'expires': expires, 'signature': signature
+        'expires': expires, 'signature': signature,
+        'form': form
     }
 
-    return render(request, 'upload.html', context)
+    PostDocument.init()
 
+    post = PostDocument(
+        indice = 'cms',
+        roles = form['roles'].value(),
+        titulo = form['titulo'].value(),
+        descripcion = form['descripcion'].value(),
+        url = [redirect_url]
+    )
+
+    post.save()
+
+    return render(request, 'upload.html', context)
+    
 
 def finalize(request, prefix):
     (storage_url, auth_token) = client.get_auth(settings.SWIFT_AUTH_URL, settings.SWIFT_USER, settings.SWIFT_PASSWORD)
