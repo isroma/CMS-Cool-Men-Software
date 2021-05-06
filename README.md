@@ -46,38 +46,75 @@ Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del tic
 
   Para crear el namespace "cms" dentro de nuestro cluster de minikube se debe ejecutar:
 
-   `kubectl create namespace cms`  
+   `kubectl create namespace cms`
 
-  # POSTGRESQL en K8S
+   TL;DR: Ejecutar:
 
-  Para desplegar postgresql en nuestro cluster de k8s utilizaremos los archivos que se encuentran en k8s/postgresql. Estos archivos crean una serie de componentes de k8s que habilitarán el despliegue de PostGreSQL. Estos componentes son:
+   `kubectl apply -f cms.yml`
+
+   Para acceder a django:
+
+  `minikube service django-service -n cms`
+
+  # POSTGRESQL
+
+  Para desplegar postgresql en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/postgresql/. Estos archivos crean una serie de componentes de k8s que habilitarán el despliegue de PostGreSQL. Estos componentes son:
 
   - Un PV (PersistentVolume): Que reservará un espacio de almacenamiento persistente dentro del cluster que podrá usado por otros deployments para almacenar datos que existan más allá de la vida del contenedor.
   - Un PVC (PersistentVolumeClaim): Que vinculará un Deployment con un PV para montar un directorio dentro de un Pod en el almacenamiento reservado
   - Un Service: Que le permitirá a Django acceder al servicio de PostGreSQL gracias a la DNS interna de Kubernetes. Este servicio será sólamente visible desde dentro del clúster, y ningún servicio o usuario podrá acceder a ello (a no ser que utilice el kubernetes proxy). Se hace así por problemas de seguridad.
-  - Un Deployment: Que es el principal componente de despliegue de la aplicación
-  
-   
+  - Un Deployment: Que es el principal componente de despliegue PostGreSQL
 
-1. Primero instalamos el PersistentVolume con:
+  # ELASTIC
 
-   `kubectl apply -f architecture/postgresql/postgresql-pv.yml`
+  Para desplegar la imagen de bitnami/elasticsearch en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/elastic/. Estos archivos crean una serie de componentes de k8s que habilitarán en despliegue de la imagen bitnami/elasticsearch. Estos componentes son:
 
-2. Creamos el PersistentVolumeClaim para el PersistentVolume con:
+  - Un Service: Que le permitirá a Django acceder al servicio de elastic gracias a la DNS interna de Kubernetes. Este servicio será sólamente visible desde dentro del clúster, y ningún servicio o usuario podrá acceder a ello (a no ser que utilice el kubernetes proxy). Se hace así por problemas de seguridad.
+  - Un Deployment: Que es el principal componente de despliegue de la imagen bitnami/elasticsearch
 
-   `kubectl apply -f architecture/postgresql/postgresql-pvc.yml`
+  # TIKA
 
-3. Creamos el Deployment de postgresql con:
+  Para desplegar tika en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/tika/. Estos archivos crean una serie de componentes de k8s que habilitarán el despliegue de Tika. Estos componentes son:
 
-   `kubectl apply -f architecture/postgresql/postgresql-deployment.yml`
+  - Un Service: Que le permitirá a Django acceder al servicio de tika gracias a la DNS interna de Kubernetes. Este servicio será sólamente visible desde dentro del clúster, y ningún servicio o usuario podrá acceder a ello (a no ser que utilice el kubernetes proxy). Se hace así por problemas de seguridad.
+  - Un Deployment: Que es el principal componente de despliegue de Tika
 
-4. Creamos el Service para exponer el despliegue con:
+  # SWIFT
 
-   `kubectl apply -f architecture/postgresql/postgresql-service.yml`
+  Para desplegar swift en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/swift/. Estos archivos crean una serie de componentes de k8s que habilitarán el despliegue de SwiftStack. Estos componentes son:
+
+  - Un Service: Que le permitirá a Django acceder al servicio de swift gracias a la DNS interna de Kubernetes. Este servicio será sólamente visible desde dentro del clúster, y ningún servicio o usuario podrá acceder a ello (a no ser que utilice el kubernetes proxy). Se hace así por problemas de seguridad.
+  - Un Deployment: Que es el principal componente de despliegue de SwiftStack
 
  # DJANGO en K8S
 
+  Para desplegar Django en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/swift/. Estos archivos crean una serie de componentes de k8s que habilitarán el despliegue de Django. Estos componentes son:
 
+  - Un Service: Que les permitirá a los usuarios acceder al cliente web del framework. Para acceder a este servicio, en vez de averiguar la IP del nodo en el que está desplegado y el puerto que Kubernetes le ha asignado automáticamente, se puede ejecutar el siguiente comando y se abrirá en nuestro navegador predeterminado el servicio:
+
+   `minikube service django-service -n cms`
+
+  - Un Deployment: Que es el principal componente de despliegue de Django
+
+  # REGENERAR UN DESPLIEGUE DE DJANGO
+
+  1. Primero debemos conectar nuestro repositorio local de imagenes de Docker con el repositorio de imagenes de Minikube con el siguiente comando:
+
+   `eval $(minikube docker-env)`
+
+  IMPORTANTE: Este comando ejecuta un cambio en la TERMINAL. Debemos trabajar con la misma terminal en la que se ha ejecutado este comando.
+
+  2. Tras esto, podemos cargarnos el despliegue actual de django con:
+
+   `kubectl delete -f architecture/templates/django/django-deployment.yml`
+
+  3. Nos contruimos la nueva imagen:
+
+   `docker build djangocms/ -t cms/django`
+
+  4. Volvernos a crear el despliegue con:
+
+   `kubectl apply -f architecture/templates/django/django-deployment.yml`
 
 # Django
 
