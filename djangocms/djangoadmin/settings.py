@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     # Our apps
     'users',
     'homepage',
-    'search'
+    'search',
+    'upload'
 ]
 
 MIDDLEWARE = [
@@ -280,3 +281,7 @@ SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
 SWIFT_USER = "test"
 SWIFT_PASSWORD = "test"
 SWIFT_CONTAINER = "container"
+
+# Tika
+
+TIKA_URL = "http://localhost:9998/"

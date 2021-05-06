@@ -23,6 +23,19 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
+  tika:
+    image: apache/tika:1.25
+    ports:
+      - "9998:9998"
+    command:
+      # - --help
+      - --cors "http://localhost:5432"
+      # --help says this should work, but it doesn't
+      # - --cors "all"
+      - -enableFileUrl
+      - --enableUnsecureFeatures
+      - --includeStack
+
   web:
     build: .
     entrypoint: ./docker-entrypoint.sh
@@ -32,7 +45,8 @@ services:
       - "5432:5432"
     depends_on:
       - db
-      - elasticseach
+      - elasticsearch
       - swiftstack
+      - tika
     links:
       - db:db

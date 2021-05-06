@@ -48,11 +48,36 @@
 
         <div id ="link">        
         </div>
+
+        <!-- <button onclick=exampleTika()>Example</button> -->
+
+        <div id ="result">        
+        </div>
+
     </body>
 </html>
 
 
 <script>
+    // function exampleTika(){
+	// 	console.log("running");
+	// 	$.ajax({
+	// 		url : "tika/", // the endpoint
+	// 		type : "GET", // http method
+	// 		data : {}, // data sent with the get request
+
+	// 		// handle a successful response
+	// 		success : function(json) {
+	// 			console.log(json["content"]); // another sanity check
+	// 		},
+
+	// 		// handle a non-successful response
+	// 		error : function(xhr,errmsg,err) {
+	// 			console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+	// 		}
+	// 	})
+	// }
+
     const uploadForm = document.getElementById("uploadForm");
     const inpFile = document.getElementById("inpFile");
     const progressBarFill = document.querySelector("#progressBar > .progress-bar-fill");
@@ -62,6 +87,9 @@
 
     function uploadFile (e) {
         e.preventDefault();
+
+        var formData = new FormData();
+        formData.append("file", inpFile.files[0]) 
 
         const xhr = new XMLHttpRequest();
 
@@ -78,6 +106,31 @@
             $(document).ready( function() {
                 $("#link").load("{{ redirect_url }}");
                 //console.log(xhr.response);
+
+                $.ajax({
+                    url : "http://localhost:9998/tika/form", // the endpoint
+                    type : "POST", // http method
+                    target: '#result',
+                    contentType: false,
+                    processData: false,
+                    //headers: {"X-CSRFToken" : "{{ csrf_token }}"},
+                    data : formData, // data sent with the get request
+
+                    success: function(responseText, statusText, xhr, $form) {
+                        $("#result").html(responseText);
+                        $('#result').show();
+                    },
+                    beforeSerialize: function($form, options) {
+                        $("#result").html("<span class=\"glyphicon glyphicon-refresh spinning\"></span> Loading...");
+                        $("#result").show();
+                    },
+                    // handle a non-successful response
+                    error : function(xhr,errmsg,err) {
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                        $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+                    }
+		        });
+
             });
         });
         
