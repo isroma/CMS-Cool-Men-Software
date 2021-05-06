@@ -29,7 +29,7 @@
 <html>
     <body>
         <!--<form  action="{{ swift_url }}" method="POST" enctype="multipart/form-data">-->  
-        <form  class="form" id="uploadForm" enctype="multipart/form-data">  
+        <form  class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">  
             <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
             <input type="hidden" name="redirect" value="{{ redirect_url }}">
             <input type="hidden" name="max_file_size" value="{{ max_file_size }}">
@@ -37,6 +37,11 @@
             <input type="hidden" name="expires" value="{{ expires }}">
             <input type="hidden" name="signature" value="{{ signature }}">
             <input type="file" name="inpFile" id="inpFile"><br>
+            {% for role in roles %}
+            <input type="checkbox" name="selected_role" value={{role}} id={{role}}>
+                <label for={{role}}> {{ role }} </label>
+            {% endfor %}
+            <br>
             <button type="submit">Upload</button>
         </form>
 
@@ -88,10 +93,27 @@
     function uploadFile (e) {
         e.preventDefault();
 
+        const xhr_rol = new XMLHttpRequest();
+        xhr_rol.open("GET", "signature/");
+        xhr_rol.send(new FormData(uploadForm));
+
+        // const checkboxes = document.querySelectorAll('input[name="rol"]:checked');
+
+        // var rol;
+        // checkboxes.forEach((checkbox) => {
+        //     rol = checkbox.id;
+        // });
+
+        // console.log(rol)
+
         var formData = new FormData();
         formData.append("file", inpFile.files[0]) 
 
         const xhr = new XMLHttpRequest();
+
+        // var swift_url = "{{ swift_url }}";
+        // swift_url = swift_url.replace("container", rol);
+        // console.log(swift_url)
 
         xhr.open("POST", "{{ swift_url }}", true);
         xhr.responseType = 'document';

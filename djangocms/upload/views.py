@@ -21,8 +21,11 @@ from swiftclient import client
 from tika import parser
 from upload.models import StorageObject
 from upload.forms import ElasticForm
-
+from users.models import Role
 from search.views import PostDocument
+
+# Create your views here.
+roles = Role.objects.all()
 
 
 def tika(request):
@@ -47,6 +50,7 @@ def tika(request):
             content_type="application/json"
         )
 
+
 def random_key(length=20):
     chars = string.ascii_letters + string.digits
     return ''.join(random.SystemRandom().choice(chars) for _ in range(length))
@@ -70,13 +74,24 @@ def get_tempurl_key():
         client.post_container(storage_url, auth_token,
                               settings.SWIFT_CONTAINER, headers)
 
-    return storage_url, key
+    return storage_url, key, auth_token
+
+
+def signature(request):
+    if request.method == 'GET':
+        (redirect_url, max_file_size, max_file_count, expires) = request.GET.get('uploadForm')
+        # path = urlparse(swift_url).path
+        # storage_url, key, auth_token = get_tempurl_key()
+
+        # hmac_body = '%s\n%s\n%s\n%s\n%s' % (path, redirect_url, max_file_size, max_file_count, expires)
+        # signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
+        print(request.GET.get('uploadForm'))
 
 
 def download(request, pk):
     so = StorageObject.objects.get(pk=pk)
 
-    storage_url, key = get_tempurl_key()
+    storage_url, key, auth_token = get_tempurl_key()
     storage_url = storage_url.replace("swiftstack", "localhost")
     url = "%s/%s/%s" % (storage_url, so.container, so.objectname)
 
@@ -91,11 +106,23 @@ def download(request, pk):
 
 
 def upload(request):
+    # TODO: check if this will be needed
     form = ElasticForm(request.POST)
 
-    storage_url, key = get_tempurl_key()
+    rol = request.GET.get('rol')
+
+    storage_url, key, auth_token = get_tempurl_key()
     storage_url = storage_url.replace("swiftstack", "localhost")
     prefix = str(uuid.uuid4())
+
+    # Creating dinamically containers according to Django roles
+    (container_url, container_token) = client.get_auth(settings.SWIFT_AUTH_URL, settings.SWIFT_USER, settings.SWIFT_PASSWORD)
+
+    headers = {'X-Container-Meta-Access-Control-Allow-Origin': '*', 'x-container-meta-temp-url-key': key}
+
+    for role in roles:
+        client.put_container(container_url, container_token, str(role))
+        client.post_container(container_url, container_token, str(role), headers)
 
     # In a real-world scenario you might want to record the prefix in a DB
     # before displaying the form to keep track of user uploads in case the
@@ -111,16 +138,14 @@ def upload(request):
     redirect_url = "http://%s%s" % (request.get_host(), reverse(finalize, kwargs={'prefix': prefix}))
     path = urlparse(swift_url).path
 
-    hmac_body = '%s\n%s\n%s\n%s\n%s' % (path, redirect_url, max_file_size, max_file_count, expires)
-    signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
-
     context = {
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
-        'expires': expires, 'signature': signature,
+        'expires': expires, 'signature': signature, 'roles': roles,
         'form': form
     }
 
+    # TODO: this is not working yet
     PostDocument.init()
 
     post = PostDocument(
