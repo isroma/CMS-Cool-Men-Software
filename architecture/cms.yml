@@ -413,7 +413,7 @@ metadata:
   labels:
     k8s-app: filebeat
 rules:
-- apiGroups: [""] # "" indicates the core API group
+- apiGroups: [""]
   resources:
   - namespaces
   - pods
@@ -460,11 +460,7 @@ data:
                 logs_path: "/var/log/containers/"
 
     processors:
-      - add_cloud_metadata:
       - add_host_metadata:
-
-    cloud.id: ${ELASTIC_CLOUD_ID}
-    cloud.auth: ${ELASTIC_CLOUD_AUTH}
 
     output.logstash:
       hosts: ['${LOGSTASH_URL}']
@@ -501,18 +497,6 @@ spec:
         env:
         - name: LOGSTASH_URL
           value: "logstash-service:5044"
-        - name: ELASTICSEARCH_HOST
-          value: elasticsearch
-        - name: ELASTICSEARCH_PORT
-          value: "9200"
-        - name: ELASTICSEARCH_USERNAME
-          value: elastic
-        - name: ELASTICSEARCH_PASSWORD
-          value: changeme
-        - name: ELASTIC_CLOUD_ID
-          value:
-        - name: ELASTIC_CLOUD_AUTH
-          value:
         - name: NODE_NAME
           valueFrom:
             fieldRef:
@@ -549,9 +533,7 @@ spec:
       - name: varlog
         hostPath:
           path: /var/log
-      # data folder stores a registry of read status for all files, so we don't send everything again on a Filebeat pod restart
       - name: data
         hostPath:
-          # When filebeat runs as non-root user, this directory needs to be writable by group (g+w).
           path: /var/lib/filebeat-data
           type: DirectoryOrCreate
