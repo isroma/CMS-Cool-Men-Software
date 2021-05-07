@@ -76,7 +76,7 @@ Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del tic
 
   Para desplegar Kibana en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/kibana/. Estos archivos crean una serie de componentes de k8s que habilitarán en despliegue de Kibana. Estos componentes son:
 
-  - Un Service: Que nos permitira a nosotros acceder a la UI de Kibana.
+  - Un Service: Que nos permitira a nosotros acceder a la UI de Kibana
   - Un Deployment: Que es el principal componente de despliegue de Kibana
   
   # LOGSTASH
@@ -89,7 +89,11 @@ Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del tic
   
   # FILEBEAT
 
-  Para desplegar Filebeat en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/filebeat/. Estos archivos crean una serie de componentes de k8s que habilitarán en despliegue de Logstash. Estos componentes son:
+  Para desplegar Filebeat en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/filebeat/. Estos archivos crean una serie de componentes de k8s que habilitarán en despliegue de Filebeat. Estos componentes son:
+  
+  - Un ServiceAccount, asociado con un ClusterRole: El service account le permite a Filebeat acceso de lectura a los recursos necesarios
+  - Un ConfigMap: Para configurar como manda los logs Filebeat a Logstash.
+  - Un DaemonSet: Usamos un DaemonSet para que Filebeat corra en todos los nodos del cluster. Asi podemos mandar todos los logs de nuestro cluster entero a Logstash.
 
   # TIKA
 
