@@ -71,6 +71,25 @@ Ejemplo: feature/CMS-X(numero de ticket del Kanban)-nombre(funcionalidad del tic
 
   - Un Service: Que le permitirá a Django acceder al servicio de elastic gracias a la DNS interna de Kubernetes. Este servicio será sólamente visible desde dentro del clúster, y ningún servicio o usuario podrá acceder a ello (a no ser que utilice el kubernetes proxy). Se hace así por problemas de seguridad.
   - Un Deployment: Que es el principal componente de despliegue de la imagen bitnami/elasticsearch
+  
+  # KIBANA
+
+  Para desplegar Kibana en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/kibana/. Estos archivos crean una serie de componentes de k8s que habilitarán en despliegue de Kibana. Estos componentes son:
+
+  - Un Service: Que nos permitira a nosotros acceder a la UI de Kibana.
+  - Un Deployment: Que es el principal componente de despliegue de Kibana
+  
+  # LOGSTASH
+
+  Para desplegar Logstash en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/logstash/. Estos archivos crean una serie de componentes de k8s que habilitarán en despliegue de Logstash. Estos componentes son:
+
+  - Un ConfigMap: Que indica a Logstash como tiene que parsear los logs que vienen de los distintos pods.
+  - Un Service: Que permitira a Filebeat comunicarse con Logstash para mandar logs a ser procesados.
+  - Un Deployment: Que es el principal componente de despliegue de Logstash
+  
+  # FILEBEAT
+
+  Para desplegar Filebeat en nuestro cluster de k8s utilizaremos los archivos que se encuentran en architecture/templates/filebeat/. Estos archivos crean una serie de componentes de k8s que habilitarán en despliegue de Logstash. Estos componentes son:
 
   # TIKA
 
