@@ -23,6 +23,7 @@ from upload.models import StorageObject
 from upload.forms import ElasticForm
 from users.models import Role
 from search.views import PostDocument
+from users.models import Profile
 
 # Create your views here.
 roles = Role.objects.all()
@@ -135,12 +136,9 @@ def upload(request):
 
     headers = {'X-Container-Meta-Access-Control-Allow-Origin': '*', 'x-container-meta-temp-url-key': key}
 
-    # for role in roles:
-    #     client.put_container(container_url, container_token, str(role))
-    #     client.post_container(container_url, container_token, str(role), headers)
-
-    client.put_container(container_url, container_token, "django")
-    client.post_container(container_url, container_token, "django", headers)
+    for role in roles:
+        client.put_container(container_url, container_token, str(role))
+        client.post_container(container_url, container_token, str(role), headers)
 
     # In a real-world scenario you might want to record the prefix in a DB
     # before displaying the form to keep track of user uploads in case the
@@ -159,25 +157,27 @@ def upload(request):
     hmac_body = '%s\n%s\n%s\n%s\n%s' % (path, redirect_url, max_file_size, max_file_count, expires)
     signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
 
+    user = Profile.objects.get(user=request.user)
+
     context = {
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
-        'expires': expires, 'signature': signature, 'roles': roles,
+        'expires': expires, 'signature': signature, 'user_roles': roles,
         'form': form
     }
 
     # TODO: this is not working yet
-    PostDocument.init()
+    # PostDocument.init()
 
-    post = PostDocument(
-        indice = 'cms',
-        roles = form['roles'].value(),
-        titulo = form['titulo'].value(),
-        descripcion = form['descripcion'].value(),
-        url = [redirect_url]
-    )
+    # post = PostDocument(
+    #     indice = 'cms',
+    #     roles = form['roles'].value(),
+    #     titulo = form['titulo'].value(),
+    #     descripcion = form['descripcion'].value(),
+    #     url = [redirect_url]
+    # )
 
-    post.save()
+    # post.save()
 
     return render(request, 'upload.html', context)
     

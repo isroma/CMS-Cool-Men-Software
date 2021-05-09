@@ -37,7 +37,7 @@
             <input type="hidden" name="expires" value="{{ expires }}">
             <input type="hidden" name="signature" value="{{ signature }}">
             <input type="file" name="inpFile" id="inpFile"><br>
-            {% for role in roles %}
+            {% for role in user_roles %}
             <input type="checkbox" name="selected_role" value={{role}} id={{role}}>
                 <label for={{role}}> {{ role }} </label>
             {% endfor %}
@@ -94,14 +94,13 @@
         e.preventDefault();
 
         // Get the checked rol on form
-        const checkboxes = document.querySelectorAll('input[name="rol"]:checked');
+        const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
 
         var rol = "container"; // Default if there are no roles set
         checkboxes.forEach((checkbox) => {
             rol = checkbox.id;
         });
 
-        // rol = "django"
         // console.log(rol)
 
         // Replace selected rol on swift url
