@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-deployment
+  namespace: cms
+  labels:
+    k8s-app: kibana-cms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana-cms
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana-cms
+    spec:
+      containers:
+      - name: kibana-cms
+        image: docker.elastic.co/kibana/kibana-oss:6.8.4
+        env:
+          - name: ELASTICSEARCH_URL
+            value: http://elastic-service:9200
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
