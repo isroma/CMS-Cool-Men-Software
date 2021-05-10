@@ -21,8 +21,12 @@ from swiftclient import client
 from tika import parser
 from upload.models import StorageObject
 from upload.forms import ElasticForm
-
+from users.models import Role
 from search.views import PostDocument
+from users.models import Profile
+
+# Create your views here.
+roles = Role.objects.all()
 
 
 def tika(request):
@@ -47,36 +51,63 @@ def tika(request):
             content_type="application/json"
         )
 
+
 def random_key(length=20):
     chars = string.ascii_letters + string.digits
     return ''.join(random.SystemRandom().choice(chars) for _ in range(length))
 
 
-def get_tempurl_key():
+def get_tempurl_key(container):
     (storage_url, auth_token) = client.get_auth(
         settings.SWIFT_AUTH_URL, settings.SWIFT_USER, settings.SWIFT_PASSWORD)
 
     try:
         meta = client.head_container(storage_url, auth_token,
-                                     settings.SWIFT_CONTAINER)
+                                     container)
         key = meta.get('x-container-meta-temp-url-key')
     except client.ClientException:
-        client.put_container(storage_url, auth_token, settings.SWIFT_CONTAINER)
+        client.put_container(storage_url, auth_token, container)
         key = None
 
     if not key:
         key = random_key()
         headers = {'x-container-meta-temp-url-key': key}
         client.post_container(storage_url, auth_token,
-                              settings.SWIFT_CONTAINER, headers)
+                              container, headers)
 
-    return storage_url, key
+    return storage_url, key, auth_token
+
+
+def signature(request):
+    if request.method == 'POST':
+        swift_url = request.POST.get('swift_url')
+        #print(swift_url)
+        redirect_url = request.POST.get('redirect_url')
+        #print(redirect_url)
+        max_file_size = request.POST.get('max_file_size')
+        #print(max_file_size)
+        max_file_count = request.POST.get('max_file_count')
+        #print(max_file_count)
+        expires = request.POST.get('expires')
+        #print(expires)
+        container = request.POST.get('container')
+        path = urlparse(swift_url).path
+        storage_url, key, auth_token = get_tempurl_key(container)
+        #print(key)
+
+        hmac_body = '%s\n%s\n%s\n%s\n%s' % (path, redirect_url, max_file_size, max_file_count, expires)
+        signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
+        
+        return HttpResponse(
+            json.dumps(signature),
+            content_type="application/json"
+        )
 
 
 def download(request, pk):
     so = StorageObject.objects.get(pk=pk)
 
-    storage_url, key = get_tempurl_key()
+    storage_url, key, auth_token = get_tempurl_key(so.container)
     storage_url = storage_url.replace("swiftstack", "localhost")
     url = "%s/%s/%s" % (storage_url, so.container, so.objectname)
 
@@ -91,11 +122,23 @@ def download(request, pk):
 
 
 def upload(request):
+    # TODO: check if this will be needed
     form = ElasticForm(request.POST)
 
-    storage_url, key = get_tempurl_key()
+    rol = request.GET.get('rol')
+
+    storage_url, key, auth_token = get_tempurl_key(settings.SWIFT_CONTAINER)
     storage_url = storage_url.replace("swiftstack", "localhost")
     prefix = str(uuid.uuid4())
+
+    # Creating dinamically containers according to Django roles
+    (container_url, container_token) = client.get_auth(settings.SWIFT_AUTH_URL, settings.SWIFT_USER, settings.SWIFT_PASSWORD)
+
+    headers = {'X-Container-Meta-Access-Control-Allow-Origin': '*', 'x-container-meta-temp-url-key': key}
+
+    for role in roles:
+        client.put_container(container_url, container_token, str(role))
+        client.post_container(container_url, container_token, str(role), headers)
 
     # In a real-world scenario you might want to record the prefix in a DB
     # before displaying the form to keep track of user uploads in case the
@@ -108,48 +151,51 @@ def upload(request):
     max_file_count = 1
     expires = int(time.time() + 5*60)
     swift_url = "%s/%s/%s/" % (storage_url, settings.SWIFT_CONTAINER, prefix)
-    redirect_url = "http://%s%s" % (request.get_host(), reverse(finalize, kwargs={'prefix': prefix}))
+    redirect_url = "http://%s%s" % (request.get_host(), reverse(finalize, kwargs={'prefix': prefix, 'container': settings.SWIFT_CONTAINER}))
     path = urlparse(swift_url).path
 
     hmac_body = '%s\n%s\n%s\n%s\n%s' % (path, redirect_url, max_file_size, max_file_count, expires)
     signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
 
+    user = Profile.objects.get(user=request.user)
+
     context = {
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
-        'expires': expires, 'signature': signature,
+        'expires': expires, 'signature': signature, 'user_roles': roles,
         'form': form
     }
 
-    PostDocument.init()
+    # TODO: this is not working yet
+    # PostDocument.init()
 
-    post = PostDocument(
-        indice = 'cms',
-        roles = form['roles'].value(),
-        titulo = form['titulo'].value(),
-        descripcion = form['descripcion'].value(),
-        url = [redirect_url]
-    )
+    # post = PostDocument(
+    #     indice = 'cms',
+    #     roles = form['roles'].value(),
+    #     titulo = form['titulo'].value(),
+    #     descripcion = form['descripcion'].value(),
+    #     url = [redirect_url]
+    # )
 
-    post.save()
+    # post.save()
 
     return render(request, 'upload.html', context)
     
 
-def finalize(request, prefix):
+def finalize(request, prefix, container):
     (storage_url, auth_token) = client.get_auth(settings.SWIFT_AUTH_URL, settings.SWIFT_USER, settings.SWIFT_PASSWORD)
 
     # Note: uploaded objects might not be listed yet due to the eventual
     # consistency. You might want to run an async job after some time to find
     # objects that are already uploaded, but not yet referenced in the DB.
-    _meta, objects = client.get_container(storage_url, auth_token, settings.SWIFT_CONTAINER, prefix=prefix)
+    _meta, objects = client.get_container(storage_url, auth_token, container=container, prefix=prefix)
 
     # Remember DB ids. These are guessable, thus a real world app should use a
     # more sophisticated approach
     ids = []
     for obj in objects:
         dbentry, _created = StorageObject.objects.get_or_create(
-            container=settings.SWIFT_CONTAINER,
+            container=container,
             objectname=obj.get('name'),
             prefix=prefix)
         dbentry.save()

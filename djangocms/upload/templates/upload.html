@@ -29,7 +29,7 @@
 <html>
     <body>
         <!--<form  action="{{ swift_url }}" method="POST" enctype="multipart/form-data">-->  
-        <form  class="form" id="uploadForm" enctype="multipart/form-data">  
+        <form  class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">  
             <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
             <input type="hidden" name="redirect" value="{{ redirect_url }}">
             <input type="hidden" name="max_file_size" value="{{ max_file_size }}">
@@ -37,6 +37,11 @@
             <input type="hidden" name="expires" value="{{ expires }}">
             <input type="hidden" name="signature" value="{{ signature }}">
             <input type="file" name="inpFile" id="inpFile"><br>
+            {% for role in user_roles %}
+            <input type="checkbox" name="selected_role" value={{role}} id={{role}}>
+                <label for={{role}}> {{ role }} </label>
+            {% endfor %}
+            <br>
             <button type="submit">Upload</button>
         </form>
 
@@ -88,13 +93,61 @@
     function uploadFile (e) {
         e.preventDefault();
 
+        // Get the checked rol on form
+        const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
+
+        var rol = "container"; // Default if there are no roles set
+        checkboxes.forEach((checkbox) => {
+            rol = checkbox.id;
+        });
+
+        // console.log(rol)
+
+        // Replace selected rol on swift url
+        var swift_url = "{{ swift_url }}";
+        swift_url = swift_url.replace("container", rol);
+        // console.log(swift_url)
+
+        // Open POST to Swiftstack
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", swift_url, true);
+        xhr.responseType = 'document';
+
+        // Add container to redirect url
+        var redirect_url = "{{ redirect_url }}"
+        redirect_url = redirect_url.replace("container", rol);
+        // console.log(redirect_url)
+
+        // Get new signature from server and send to Swiftstack
+        $.ajax({
+			url : "signature/", // the endpoint
+			type : "POST", // http method
+            headers: {"X-CSRFToken" : "{{ csrf_token }}"},
+			data : {swift_url : swift_url,
+                    redirect_url : redirect_url,
+                    max_file_size : "{{ max_file_size }}",
+                    max_file_count : "{{ max_file_count }}",
+                    expires : "{{ expires }}",
+                    container : rol}, // data sent with the get request
+
+			// handle a successful response
+			success : function(json) {
+                uploadForm["signature"].value = json
+                uploadForm["redirect"].value = redirect_url      
+                xhr.send(new FormData(uploadForm));
+			},
+
+			// handle a non-successful response
+			error : function(xhr,errmsg,err) {
+				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+			}
+		})
+
+        // Form for Tika
         var formData = new FormData();
         formData.append("file", inpFile.files[0]) 
 
-        const xhr = new XMLHttpRequest();
-
-        xhr.open("POST", "{{ swift_url }}", true);
-        xhr.responseType = 'document';
+        // Progress bar
         xhr.upload.addEventListener("progress", e => {
             const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
             
@@ -102,10 +155,11 @@
             progressBarText.textContent = percent.toFixed(2) + "%";
         });
 
+        // Tika parse and Elastic send
         xhr.upload.addEventListener("load", e => {
             $(document).ready( function() {
-                $("#link").load("{{ redirect_url }}");
-                //console.log(xhr.response);
+
+                $("#link").load(redirect_url);
 
                 $.ajax({
                     url : "http://localhost:9998/tika/form", // the endpoint
@@ -133,8 +187,6 @@
 
             });
         });
-        
-        xhr.send(new FormData(uploadForm));
     }
 </script>
 
