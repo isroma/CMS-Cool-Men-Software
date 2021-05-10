@@ -24,9 +24,38 @@ from upload.forms import ElasticForm
 from users.models import Role
 from search.views import PostDocument
 from users.models import Profile
+from django.core.mail import EmailMessage
 
 # Create your views here.
 roles = Role.objects.all()
+
+
+def notifications_via_email(container, username, user_email, url):
+    mail_subject = "Nuevo archivo en '" + container + "'"
+    message = username + ", como miembro del grupo '" + container + "' te informamos que se ha subido un nuevo archivo." + \
+        " Te lo puedes descargar en este link: " + url
+    from_email = 'coolmensoftware@gmail.com'
+    email = EmailMessage(mail_subject, message, from_email, to=[user_email])
+    email.send()
+
+    return 0
+
+
+def notifications_download(pk):
+    so = StorageObject.objects.get(pk=pk)
+
+    storage_url, key, auth_token = get_tempurl_key(so.container)
+    storage_url = storage_url.replace("swiftstack", "localhost")
+    url = "%s/%s/%s" % (storage_url, so.container, so.objectname)
+
+    expires = int(time.time() + 60)
+    path = urlparse(url).path
+
+    hmac_body = 'GET\n%s\n%s' % (expires, path)
+    signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
+    signed_url = '%s?temp_url_sig=%s&temp_url_expires=%s' % (url, signature, expires)
+
+    return str(signed_url)
 
 
 def tika(request):
@@ -201,4 +230,14 @@ def finalize(request, prefix, container):
         dbentry.save()
         ids.append(dbentry.id)
 
-    return render(request, 'finalize.html', {'ids': ids, 'host': request.get_host()})
+    for role in roles:
+        if str(role) == str(container):
+            role_id = role.id
+
+    for user in Profile.objects.filter(roles=role_id):
+        if user.user.username != 'admin':
+            url = notifications_download(ids[0])
+            url = url.replace(" ", "%20")
+            notifications_via_email(container, user.user.username, user.user.email, url)
+
+    return render(request, 'finalize.html', {'ids': int(ids[0]), 'host': request.get_host()})
