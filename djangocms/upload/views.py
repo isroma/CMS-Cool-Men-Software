@@ -23,18 +23,25 @@ from upload.models import StorageObject
 from users.models import Role
 from search.views import PostDocument
 from users.models import Profile
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 # Create your views here.
 roles = Role.objects.all()
 
 
-def notifications_via_email(container, username, user_email, url):
+def notifications_via_email(container, filename, username, user_email, url):
     mail_subject = "Nuevo archivo en '" + container + "'"
-    message = username + ", como miembro del grupo '" + container + "' te informamos que se ha subido un nuevo archivo." + \
-        " Te lo puedes descargar en este link: " + url
+    message = render_to_string('download_email.html', {
+        'username': username,
+        'container': container,
+        'filename': filename,
+        'url': url
+    })
     from_email = 'coolmensoftware@gmail.com'
-    email = EmailMessage(mail_subject, message, from_email, to=[user_email])
+    email = EmailMultiAlternatives(mail_subject, message, from_email, to=[user_email])
+    email.content_subtype = 'html'
+
     email.send()
 
     return 0
@@ -212,6 +219,9 @@ def finalize(request, prefix, container):
             prefix=prefix)
         dbentry.save()
         ids.append(dbentry.id)
+        filename = obj.get('name')
+
+    filename = str(filename).rpartition('/')[-1]
 
     for role in roles:
         if str(role) == str(container):
@@ -219,8 +229,10 @@ def finalize(request, prefix, container):
 
     for user in Profile.objects.filter(roles=role_id):
         if user.user.username != 'admin':
-            url = notifications_download(ids[0])
-            url = url.replace(" ", "%20")
-            # notifications_via_email(container, user.user.username, user.user.email, url)
+            for id in ids:
+                url = notifications_download(id)
+                url = url.replace(" ", "%20")
+            notifications_via_email(container, filename, user.user.username, user.user.email, url)
+
 
     return render(request, 'finalize.html', {'ids': ids, 'host': request.get_host()})
