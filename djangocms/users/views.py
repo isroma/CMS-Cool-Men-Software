@@ -67,8 +67,7 @@ def register(request):
                 })
                 from_email = 'coolmensoftware@gmail.com'
                 to_email = form.cleaned_data.get('email')
-                email = EmailMultiAlternatives(
-                    mail_subject, message, from_email, to=[to_email])
+                email = EmailMultiAlternatives(mail_subject, message, from_email, to=[to_email])
                 email.content_subtype = 'html'
 
                 email.send()
