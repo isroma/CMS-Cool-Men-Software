@@ -188,7 +188,7 @@ def upload(request):
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
         'expires': expires, 'signature': signature, 'user_roles': user.roles.all(),
-        'form': form
+        'username': user.user.username
     }
 
     return render(request, 'upload.html', context)
@@ -221,6 +221,6 @@ def finalize(request, prefix, container):
         if user.user.username != 'admin':
             url = notifications_download(ids[0])
             url = url.replace(" ", "%20")
-            notifications_via_email(container, user.user.username, user.user.email, url)
+            # notifications_via_email(container, user.user.username, user.user.email, url)
 
-    return render(request, 'finalize.html', {'ids': int(ids[0]), 'host': request.get_host()})
+    return render(request, 'finalize.html', {'ids': ids, 'host': request.get_host()})

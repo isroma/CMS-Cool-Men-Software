@@ -12,7 +12,7 @@ services:
   elasticsearch:
     image: bitnami/elasticsearch
     ports:
-      - "9200:31000"
+      - "9200:9200"
 
   db:
     image: postgres
