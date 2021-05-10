@@ -162,7 +162,7 @@ def upload(request):
     context = {
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
-        'expires': expires, 'signature': signature, 'user_roles': roles,
+        'expires': expires, 'signature': signature, 'user_roles': user.roles.all(),
         'form': form
     }
 

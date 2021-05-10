@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as do_login, logout as do_logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
-from users.forms import RegisterForm, LoginForm, PasswordForm, ProfileForm
-from users.models import Profile
+from users.forms import RegisterForm, LoginForm, PasswordForm, ChangePasswordForm, RolesForm
+from users.models import Profile, Role
 from django.template.loader import render_to_string, get_template
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
@@ -197,7 +197,7 @@ def change_password(request):
     It handles (almost) all input exception
     """
 
-    form = ProfileForm(request.POST or None)
+    form = ChangePasswordForm(request.POST or None)
 
     if request.method == 'POST':
         if form.is_valid():
@@ -236,9 +236,23 @@ def profile(request):
 
     user = Profile.objects.get(user=request.user)
 
+    form = RolesForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            return redirect('/')
+
     context = {
         'username': request.user.username,
         'verified': user.verified,
+        'roles': user.roles.all(),
+        'form': form,
+        'admin_form': False
     }
+
+    if request.user.username == 'admin':
+        for i in range(Role.objects.count()):
+            user.roles.add(Role.objects.get(pk=i + 1))
+            context['admin_form'] = True
 
     return render(request, 'profile.html', context)

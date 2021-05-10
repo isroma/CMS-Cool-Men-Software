@@ -17,7 +17,7 @@
       </div>
       <div class="row">
          <div class="col-md-4 mx-auto">
-            <div class="myform form">
+            <div>
                <div>
                   <div class="text-center pt-2">
                      <p style="font-size: larger;"><b>Email verificado:</b>
@@ -27,9 +27,34 @@
                         incorrectamente
                         {% endif %}
                      </p>
+                     <p style="font-size: larger;"><b>Roles:</b>
+                        {% for rol in roles %}
+                           {{ rol }}
+                        {% endfor %}
+                     </p>
                   </div>
                </div>
             </div>
+            {% if admin_form == False %}
+            <div class="myform form">
+               <form action="{% url 'profile' %}" method="post">
+                  <p class="text-center pt-2">Elige tus roles:</p>
+                  {% csrf_token %}
+                  <div class="form-group pl-4">
+                     {% for rol in form.roles %}
+                        <div class="checkbox">
+                           {{ rol }}
+                        </div>
+                     {% endfor %}
+                  </div>
+                  <div class="text-center pt-2">
+                     <button type="submit" class="btn btn-block login-button" style="padding: 8px 25px;">
+                        Añadir roles
+                     </button>
+                  </div>
+               </form>
+            </div>
+            {% endif %}
          </div>
       </div>
    </div>

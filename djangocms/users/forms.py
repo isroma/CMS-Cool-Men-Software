@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from users.models import Profile
+from users.models import Profile, Role
 from django.contrib.auth.models import User
 
 
@@ -46,12 +46,27 @@ class PasswordForm(forms.Form):
         exclude = ['username', 'password', 'password_repeat']
 
 
-class ProfileForm(forms.Form):
+class ChangePasswordForm(forms.Form):
     """
     Model form for user changing his password with the old one
-    TODO: it should be renamed to a clearer name like ChangePasswordForm
     """
 
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Contraseña antigua")
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Nueva contraseña")
     password_repeat = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}), label="Repetir nueva contraseña")
+
+
+class RolesForm(forms.Form):
+    """
+    Model form for user adding its own roles
+    """
+
+    roles = forms.ModelMultipleChoiceField(
+        queryset=Role.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['roles']
+        exclude = ['user', 'verified']
