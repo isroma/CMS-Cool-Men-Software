@@ -174,23 +174,19 @@
                         $("#result").html(responseText);
                         $('#result').show();
 
-                        // TODO: Get metadata with Tika and send it to Elastic
-
-                        // cd /opt/bitnami/elasticsearch/config/
-                        // echo ‘http.cors.enabled: true’ >> elasticsearch.yml
-                        // echo ‘http.cors.allow-origin: “*”‘ >> elasticsearch.yml
-
-
-                        // Upload to Elastic
+                        // Upload to ElasticSearch
                         $.ajax({
                             // url : "http://localhost:9200/" + rol + "/" + uploadForm["signature"].value, // the endpoint
                             url : "http://localhost:9200/" + rol + "/_doc/" + uploadForm["signature"].value, // the endpoint
                             type : "POST", // http method
                             dataType: "json",
                             contentType: "application/json",
-                            //headers: {"X-CSRFToken" : "{{ csrf_token }}"},
-                            data : JSON.stringify({ "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
-                                                    "text": responseText }), // data sent with the get request
+                            data : JSON.stringify({"user": "{{ username }}",
+                                                   "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
+                                                   "text": responseText,
+                                                //    "metadata": ,
+                                                   "url": swift_url
+                                                }), // data sent with the get request
 
                             // handle a successful response
                             success : function(json) {
