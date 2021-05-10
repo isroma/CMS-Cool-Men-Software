@@ -50,6 +50,13 @@ Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el cont
       docker exec -it <container_id> swift -A ST_AUTH -U ST_USER -K ST_KEY post container -H "X-Container-Meta-Access-Control-Allow-Origin:*"
       ```
       Donde ST_AUTH es algo como “http://swiftstack:8080/auth/v1.0“ y ST_USER y ST_KEY son usuario y contraseña de Swiftstack. 
+ 10. Para habilitar la subida de archivos a ElasticSearch tambien es necesario ejecutar estos comando en la maquina de ElasticSearch:
+      ```
+      cd /opt/bitnami/elasticsearch/config/
+      echo 'http.cors.enabled: true' >> elasticsearch.yml
+      echo 'http.cors.allow-origin: "*"' >> elasticsearch.yml
+      ```
+
 
 ### Lanzar Django una vez instalado:
 
