@@ -20,7 +20,6 @@ from urllib.parse import urlparse
 from swiftclient import client
 from tika import parser
 from upload.models import StorageObject
-from upload.forms import ElasticForm
 from users.models import Role
 from search.views import PostDocument
 from users.models import Profile
@@ -151,9 +150,6 @@ def download(request, pk):
 
 
 def upload(request):
-    # TODO: check if this will be needed
-    form = ElasticForm(request.POST)
-
     rol = request.GET.get('rol')
 
     storage_url, key, auth_token = get_tempurl_key(settings.SWIFT_CONTAINER)
@@ -194,19 +190,6 @@ def upload(request):
         'expires': expires, 'signature': signature, 'user_roles': user.roles.all(),
         'form': form
     }
-
-    # TODO: this is not working yet
-    # PostDocument.init()
-
-    # post = PostDocument(
-    #     indice = 'cms',
-    #     roles = form['roles'].value(),
-    #     titulo = form['titulo'].value(),
-    #     descripcion = form['descripcion'].value(),
-    #     url = [redirect_url]
-    # )
-
-    # post.save()
 
     return render(request, 'upload.html', context)
     
