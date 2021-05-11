@@ -152,8 +152,6 @@
                         $("#result").html(responseText);
                         $('#result').show();
 
-                        var signed_url = $("#link").text()
-
                         // Upload to ElasticSearch
                         $.ajax({
                             // url : "http://localhost:9200/" + rol + "/" + uploadForm["signature"].value, // the endpoint
@@ -166,7 +164,7 @@
                                 "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
                                 "text": responseText,
                                 //    "metadata": ,
-                                "url": signed_url
+                                "url": redirect_url
                             }), // data sent with the get request
 
                             // handle a successful response
