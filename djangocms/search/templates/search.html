@@ -4,22 +4,81 @@
 {% load static %}
 {% block page_content %}
 
-<form method='get'>
-    <input id='q' name='q' type='text' placeholder="Tu búsqueda...">
-    {% for role in roles %}
-      <input type="checkbox" name="indice" value={{role}} id="id">
-        <label for={{role}}> {{ role }} </label>
-    {% endfor %}
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-</form>
 
-{% for item in posts %}
-  {% if item.roles == id %}
-    {{ item.titulo }}
-    {{ item.descripcion }}
-  {% endif %}
-{% endfor %}
+
+<html>
+  <body>
+    <form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
+        <input id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
+        {% for role in roles %}
+          <input type="radio" name="selected_role" value={{role}} id={{role}}>
+            <label for={{role}}> {{ role }} </label>
+        {% endfor %}
+          <div>
+            <button type="submit">Submit</button>
+          </div>
+    </form>
+
+    <div id ="result">        
+    </div>
+  </body>
+</html>
+
+<script>
+  const searchForm = document.getElementById("searchForm");
+
+  searchForm.addEventListener("submit", submitSearch);
+
+  function submitSearch (e) {
+    e.preventDefault();
+
+    // Get the checked rol on form
+    const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
+
+    var rol = " "; // Default if there are no roles set
+    checkboxes.forEach((checkbox) => {
+        rol = checkbox.id;
+    });
+
+    if(rol != " "){
+      
+      // Search on ElasticSearch
+      $.ajax({
+        url : "http://localhost:9200/" + rol + "/_search?pretty", // the endpoint
+        type : "POST", // http method
+        dataType: "json",
+        contentType: "application/json",
+        data : JSON.stringify({"query": {
+                                "query_string": {
+                                  "query": searchForm["searchText"].value
+                                  }
+                                }
+                              }), // data sent with the get request
+
+        // handle a successful response
+        success : function(json) {
+            for(i = 0; i < json["hits"]["hits"].length; i++){
+              // Get id for url
+              url = json["hits"]["hits"][i]["_source"]["url"]
+              url = url.replace("?", json["hits"]["hits"][i]["_source"]["title"] + "?")
+
+              $("#result").append("<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] + 
+                              "<br> <b> Url: </b> <br> <a href='" + url + "'> Link descarga </a>" +
+                              "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + "<br><br>");
+            }
+            $('#result').show();
+        },
+
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        }
+      })
+
+    }
+    
+  }
+</script>
+
 
 {% endblock %}

@@ -8,20 +8,15 @@ import time
 import uuid
 import re
 
-# TODO: clean trash
-
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.conf import settings
 from django.urls import reverse
-from django.template import RequestContext
-
 from urllib.parse import urlparse
 from swiftclient import client
 from tika import parser
 from upload.models import StorageObject
 from users.models import Role
-from search.views import PostDocument
 from users.models import Profile
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -30,12 +25,11 @@ from django.template.loader import render_to_string
 roles = Role.objects.all()
 
 
-def notifications_via_email(container, filename, username, user_email, url):
+def notifications_via_email(container, username, user_email, url):
     mail_subject = "Nuevo archivo en '" + container + "'"
     message = render_to_string('download_email.html', {
         'username': username,
         'container': container,
-        'filename': filename,
         'url': url
     })
     from_email = 'coolmensoftware@gmail.com'
@@ -146,7 +140,7 @@ def download(request, pk):
     storage_url = storage_url.replace("swiftstack", "localhost")
     url = "%s/%s/%s" % (storage_url, so.container, so.objectname)
 
-    expires = int(time.time() + 60)
+    expires = int(time.time() + 60*60*24*365)
     path = urlparse(url).path
 
     hmac_body = 'GET\n%s\n%s' % (expires, path)
@@ -181,7 +175,7 @@ def upload(request):
 
     max_file_size = 5*1024*1024*1024
     max_file_count = 1
-    expires = int(time.time() + 5*60)
+    expires = int(time.time() + 60*60*24*365)
     swift_url = "%s/%s/%s/" % (storage_url, settings.SWIFT_CONTAINER, prefix)
     redirect_url = "http://%s%s" % (request.get_host(), reverse(finalize, kwargs={'prefix': prefix, 'container': settings.SWIFT_CONTAINER}))
     path = urlparse(swift_url).path
@@ -219,9 +213,6 @@ def finalize(request, prefix, container):
             prefix=prefix)
         dbentry.save()
         ids.append(dbentry.id)
-        filename = obj.get('name')
-
-    filename = str(filename).rpartition('/')[-1]
 
     for role in roles:
         if str(role) == str(container):
@@ -232,7 +223,7 @@ def finalize(request, prefix, container):
             for id in ids:
                 url = notifications_download(id)
                 url = url.replace(" ", "%20")
-            notifications_via_email(container, filename, user.user.username, user.user.email, url)
+            notifications_via_email(container, user.user.username, user.user.email, url)
 
 
     return render(request, 'finalize.html', {'ids': ids, 'host': request.get_host()})
