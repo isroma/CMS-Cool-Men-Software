@@ -254,4 +254,7 @@ def profile(request):
             user.roles.add(Role.objects.get(pk=i + 1))
             context['admin_form'] = True
 
+    # This deletes the form but its interesting to have that form for possible future needs
+    context['admin_form'] = True
+
     return render(request, 'profile.html', context)
