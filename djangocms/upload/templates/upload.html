@@ -173,7 +173,8 @@
 
                             success: function (responseText, statusText, xhr, $form) {
 
-                                $("#link").load(redirect_url, complete = function () {$("#linkText").html("<br><b> Link: </b>");});
+                                // $("#link").load(redirect_url, complete = function () {$("#linkText").html("<br><b> Link: </b>");});
+                                $("#link").load(redirect_url)
                                 
                                 tikaMetadata = JSON.stringify(responseText, null, 4);
 
@@ -206,7 +207,7 @@
                                 }, 5000);
                             },
                             complete: function () {
-                                //$("#linkText").html("<b> Link: </b>");
+                                $("#linkText").html("<b> Link: </b>");
                                 $("#result").html("<br> <b> Text: </b>" + tikaText + "<br><br> <b> Metadata: </b>" + tikaMetadata);
                                 $('#result').show();
                             },
