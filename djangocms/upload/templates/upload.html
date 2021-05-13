@@ -51,7 +51,12 @@
         </div>
     </div>
 
+    <div id="linkText">
+
+    </div>
+
     <div id="link">
+
     </div>
 
     <div id="result">
@@ -136,6 +141,9 @@
         // Tika parse and Elastic send
         xhr.upload.addEventListener("load", e => {
             $(document).ready(function () {
+
+                var tikaText;
+                var tikaMetadata;
                 
                 $.ajax({
                     url: "http://localhost:9998/tika/form", // the endpoint
@@ -143,47 +151,73 @@
                     target: '#result',
                     contentType: false,
                     processData: false,
-                    //headers: {"X-CSRFToken" : "{{ csrf_token }}"},
                     data: formData, // data sent with the get request
 
-                    success: function (responseText, statusText, xhr, $form) {
-                        $("#result").html(responseText);
+                    beforeSend: function () {
+                        $('#result').html('Loading text and metadata...')
                         $('#result').show();
-
-                        $("#link").load(redirect_url);
-
-                        // Timeout so it has enough time to get the download url
-                        setTimeout(function(){
-                            // Upload to ElasticSearch
-                            $.ajax({
-                                url: "http://localhost:9200/" + rol + "/_doc/" + uploadForm["signature"].value, // the endpoint
-                                type: "POST", // http method
-                                dataType: "json",
-                                contentType: "application/json",
-                                data: JSON.stringify({
-                                    "user": "{{ username }}",
-                                    "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
-                                    "text": responseText,
-                                    //    "metadata": ,
-                                    "url": $("#link").text().replace(/(\r\n|\n|\r| )/gm, "")
-                                }), // data sent with the get request
-
-                                // handle a successful response
-                                success: function (json) {
-                                    //console.log("FUNCIONA!")
-                                    $("#link").load(redirect_url);
-                                },
-
-                                // handle a non-successful response
-                                error: function (xhr, errmsg, err) {
-                                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                                }
-                            })
-                        }, 5000);
                     },
-                    beforeSerialize: function ($form, options) {
-                        $("#result").html("<span class=\"glyphicon glyphicon-refresh spinning\"></span> Loading...");
-                        $("#result").show();
+
+                    success: function (responseText, statusText, xhr, $form) {
+
+                        tikaText = responseText;
+
+                        $.ajax({
+                            url: "http://localhost:9998/meta/form", // the endpoint
+                            type: "POST", // http method
+                            target: '#result',
+                            contentType: false,
+                            processData: false,
+                            headers: {Accept: "application/json"},
+                            data: formData, // data sent with the get request
+
+                            success: function (responseText, statusText, xhr, $form) {
+
+                                $("#link").load(redirect_url, complete = function () {$("#linkText").html("<br><b> Link: </b>");});
+                                
+                                tikaMetadata = JSON.stringify(responseText, null, 4);
+
+                                // Timeout so it has enough time to get the download url
+                                setTimeout(function () {
+                                    // Upload to ElasticSearch
+                                    $.ajax({
+                                        url: "http://localhost:9200/" + rol + "/_doc/" + uploadForm["signature"].value, // the endpoint
+                                        type: "POST", // http method
+                                        dataType: "json",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({
+                                            "user": "{{ username }}",
+                                            "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
+                                            "text": tikaText,
+                                            "metadata": tikaMetadata,
+                                            "url": $("#link").text().replace(/(\r\n|\n|\r| )/gm, "")
+                                        }), // data sent with the get request
+
+                                        // handle a successful response
+                                        success: function (json) {
+                                            //console.log("FUNCIONA!")
+                                        },
+
+                                        // handle a non-successful response
+                                        error: function (xhr, errmsg, err) {
+                                            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                        }
+                                    })
+                                }, 5000);
+                            },
+                            complete: function () {
+                                //$("#linkText").html("<b> Link: </b>");
+                                $("#result").html("<br> <b> Text: </b>" + tikaText + "<br><br> <b> Metadata: </b>" + tikaMetadata);
+                                $('#result').show();
+                            },
+
+                            // handle a non-successful response
+                            error: function (xhr, errmsg, err) {
+                                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+                            }
+                        });
+
                     },
                     // handle a non-successful response
                     error: function (xhr, errmsg, err) {
