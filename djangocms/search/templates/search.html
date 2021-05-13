@@ -69,13 +69,13 @@
                 "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
                 "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + 
                 "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
-                + "<br>------------------------------------------------------------------------------------<br>");
+                + "<hr>");
             } else {
               $("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
                 "<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
                 "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" + 
                 "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
-                + "<br>------------------------------------------------------------------------------------<br>");
+                + "<hr>");
             }
           }
 
