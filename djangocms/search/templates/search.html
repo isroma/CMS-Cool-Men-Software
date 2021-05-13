@@ -64,12 +64,18 @@
           for (i = 0; i < json["hits"]["hits"].length; i++) {
             // console.log(json["hits"]["hits"][i]["_source"]["url"])
             if (json["hits"]["hits"][i]["_source"]["text"] != "") {
-              $("#result").append("<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+              $("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
+                "<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
                 "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
-                "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + "<br><br>");
+                "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + 
+                "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
+                + "<br>------------------------------------------------------------------------------------<br>");
             } else {
-              $("#result").append("<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-                "<br> <b> Url: </b> <br> <div id ='url" + url + "'> </div>");
+              $("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
+                "<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+                "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" + 
+                "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
+                + "<br>------------------------------------------------------------------------------------<br>");
             }
           }
 
