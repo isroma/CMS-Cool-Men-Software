@@ -62,14 +62,15 @@
         success: function (json) {
           // Load data from search
           for (i = 0; i < json["hits"]["hits"].length; i++) {
-            $("#result").append("<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-              "<br> <b> Url: </b> <br> <div id ='url" + i + "'> </div>" +
-              "<b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + "<br><br>");
-          }
-          // Load url for download
-          for (i = 0; i < json["hits"]["hits"].length; i++) {
-            $("#url" + i).load(json["hits"]["hits"][i]["_source"]["url"]);
-            console.log(json["hits"]["hits"][i]["_source"]["url"])
+            // console.log(json["hits"]["hits"][i]["_source"]["url"])
+            if (json["hits"]["hits"][i]["_source"]["text"] != "") {
+              $("#result").append("<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+                "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
+                "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + "<br><br>");
+            } else {
+              $("#result").append("<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+                "<br> <b> Url: </b> <br> <div id ='url" + url + "'> </div>");
+            }
           }
 
           $('#result').show();
