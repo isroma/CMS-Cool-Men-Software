@@ -223,6 +223,9 @@ def finalize(request, prefix, container):
             for id in ids:
                 url = notifications_download(id)
                 url = url.replace(" ", "%20")
+
+            # This is needed due to Gmail blocking our mail "spam" hehe
+            time.sleep(1)
             notifications_via_email(container, user.user.username, user.user.email, url)
 
 
