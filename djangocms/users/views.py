@@ -61,7 +61,7 @@ def register(request):
                 mail_subject = 'Activa tu cuenta de Cool Men Software'
                 message = render_to_string('email.html', {
                     'user': user,
-                    'domain': 'http://localhost:8000',
+                    'domain': 'http://localhost:5432',
                     'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
                     'token': account_activation_token.make_token(user),
                 })
