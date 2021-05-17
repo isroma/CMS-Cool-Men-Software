@@ -19,8 +19,6 @@
 	</form>
 	<div class="user-container">
 		<div class="panel" id="panel">
-			<div id="result">
-			</div>
 		</div>
 	</div>
 </div>
@@ -95,11 +93,11 @@
 						</div>
 						`;
 					}
-					$("#panel").append(fileHTML);
+					$("#panel").append(innerHTML);
 					innerHTML="";
 				}
 
-				$('#result').show();
+				$('#panel').show();
 			},
 
 			// handle a non-successful response
