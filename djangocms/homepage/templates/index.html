@@ -48,7 +48,7 @@
 
 		// Get the checked rol on form
 		const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
-
+		var type = "{% static 'img/file.png' %}";
 		var rol = "container"; // Default if there are no roles set
 		checkboxes.forEach((checkbox) => {
 			rol = checkbox.id;
@@ -70,25 +70,33 @@
 				}
 			}), // data sent with the get request
 
+/* 			json["hits"]["hits"][i]["_source"]["title"]
+			json["hits"]["hits"][i]["_source"]["url"]
+			json["hits"]["hits"][i]["_source"]["text"]
+			json["hits"]["hits"][i]["_source"]["metadata"] */
+
 			// handle a successful response
 			success: function (json) {
 				// Load data from search
+				var innerHTML="";
 				for (i = 0; i < json["hits"]["hits"].length; i++) {
-					// console.log(json["hits"]["hits"][i]["_source"]["url"])
 					if (json["hits"]["hits"][i]["_source"]["text"] != "") {
-						$("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
-						"<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-						"<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
-						"<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + 
-						"<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
-						+ "<hr>");
+						innerHTML = `
+						<div class="component">
+							<img src="${type}" alt="Archivo" class="image" >
+							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
+						</div>
+						`;
 					} else {
-						$("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
-						"<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-						"<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" + 
-						"<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
-						+ "<hr>");
+						innerHTML = `
+						<div class="component">
+							<img src="${type}" alt="Archivo" class="image" >
+							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
+						</div>
+						`;
 					}
+					$("#panel").append(fileHTML);
+					innerHTML="";
 				}
 
 				$('#result').show();
