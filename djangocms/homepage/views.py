@@ -3,7 +3,7 @@ from users.models import Role, Profile
 
 # Create your views here.
 
-def search(request):
+def index(request):
     user = Profile.objects.get(user=request.user)
     roles = Role.objects.all()
 
