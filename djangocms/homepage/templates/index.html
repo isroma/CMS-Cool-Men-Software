@@ -35,15 +35,21 @@
 				<img src="{% static 'img/imagen.png' %}" alt="Imagen" class="image" >
 				<p> prueba.png </p>
 			</div>
-			
+
 	@TODO falta implementarlo con Django, es solo una demo no me mateis :( -->
 <script>
 	const searchForm = document.getElementById("searchForm");
 
 	searchForm.addEventListener("submit", submitSearch);
 
+	function clearBox(elementID)
+	{
+		document.getElementById(elementID).innerHTML = "";
+	}
+
 	function submitSearch(e) {
 		e.preventDefault();
+		clearBox("panel");
 
 		// Get the checked rol on form
 		const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
@@ -73,21 +79,21 @@
 			success: function (json) {
 				// Load data from search
 				for (i = 0; i < json["hits"]["hits"].length; i++) {
-				// console.log(json["hits"]["hits"][i]["_source"]["url"])
-				if (json["hits"]["hits"][i]["_source"]["text"] != "") {
-					$("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
-					"<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-					"<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
-					"<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + 
-					"<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
-					+ "<hr>");
-				} else {
-					$("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
-					"<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-					"<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" + 
-					"<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
-					+ "<hr>");
-				}
+					// console.log(json["hits"]["hits"][i]["_source"]["url"])
+					if (json["hits"]["hits"][i]["_source"]["text"] != "") {
+						$("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
+						"<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+						"<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
+						"<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + 
+						"<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
+						+ "<hr>");
+					} else {
+						$("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
+						"<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+						"<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" + 
+						"<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
+						+ "<hr>");
+					}
 				}
 
 				$('#result').show();
