@@ -83,6 +83,9 @@
 						<div class="component">
 							<img src="${type}" alt="Archivo" class="image" >
 							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
+							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
+								Link
+							</a>
 						</div>
 						`;
 					} else {
@@ -90,6 +93,9 @@
 						<div class="component">
 							<img src="${type}" alt="Archivo" class="image" >
 							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
+							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
+								Link
+							</a>
 						</div>
 						`;
 					}
