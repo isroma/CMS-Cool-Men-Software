@@ -42,19 +42,14 @@
 
 	searchForm.addEventListener("submit", submitSearch);
 
-	function clearBox(elementID)
-	{
-		document.getElementById(elementID).innerHTML = "";
-	}
-
 	function submitSearch(e) {
+		$("#result").empty();
 		e.preventDefault();
-		clearBox("panel");
 
 		// Get the checked rol on form
 		const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
 
-		var rol = " "; // Default if there are no roles set
+		var rol = "container"; // Default if there are no roles set
 		checkboxes.forEach((checkbox) => {
 			rol = checkbox.id;
 		});
