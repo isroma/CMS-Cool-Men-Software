@@ -75,7 +75,7 @@
   <form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
     <input id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
     {% for role in roles %}
-    <input type="radio" name="selected_role" value={{role}} id={{role}}>
+    <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
     <label for={{role}}> {{ role }} </label>
     {% endfor %}
   </form>
@@ -164,24 +164,33 @@
         },
         // handle a successful response
         success: function (json) {
+
+          var flag = false;
+
           // Load data from search
           $("#result").html("")
           for (i = 0; i < json["hits"]["hits"].length; i++) {
             // console.log(json["hits"]["hits"][i]["_source"]["url"])
             if (json["hits"]["hits"][i]["_source"]["text"] != "") {
               $("#result").append("<br><b> Resultado " + (i + 1) + ":</b><br>" +
-                "<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-                "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
+                "<b> Título: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+                "<br> <b> Link: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Pulsa para descargar </a>" +
                 "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] +
                 "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
                 + "<hr>");
             } else {
               $("#result").append("<br><b> Resultado " + (i + 1) + ":</b><br>" +
-                "<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-                "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
+                "<b> Título: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+                "<br> <b> Link: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Pulsa para descargar </a>" +
                 "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
                 + "<hr>");
             }
+
+            flag = true;
+          }
+
+          if (!flag) {
+            $("#result").append("No se han encontrado resultados :(");
           }
 
           $('#result').show();
