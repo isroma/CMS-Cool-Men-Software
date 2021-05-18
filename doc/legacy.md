@@ -41,7 +41,7 @@ Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el cont
       ``` 
       docker-compose up
       ```
-  8. Volvemos a apagar con ctrl + c y hacemos un último docker-compose up (en total son 3), este último creará el superuser 'admin admin'
+  7. Volvemos a apagar con ctrl + c y hacemos un último docker-compose up (en total son 3), este último creará el superuser 'admin admin'
       ``` 
       docker-compose up
       ```

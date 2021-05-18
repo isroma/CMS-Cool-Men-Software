@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     # Our apps
     'users',
     'homepage',
-    'search'
+    'search',
+    'upload'
 ]
 
 MIDDLEWARE = [
@@ -189,18 +190,23 @@ EMAIL_PORT = 587
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}'
+        },
+    },
     'handlers': {
-        'file': {
+        'console': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/djangocms/debug.log',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file'],
+        '*': {
+            'handlers': ['console'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
     },
 }

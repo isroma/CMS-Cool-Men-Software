@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django_elasticsearch_dsl import Document
+from django_elasticsearch_dsl import Document, Date, Integer, Keyword, Text
 from django_elasticsearch_dsl.registries import registry
 from elasticsearch_dsl.query import MultiMatch
 from search.models import Post
-from users.models import Role
+from users.models import Role, Profile
 
 # Create your views here.
 roles = Role.objects.all()
@@ -21,7 +21,7 @@ class PostDocument(Document):
         model = Post
 
         fields = [
-            'id', 'roles', 'indice', 'titulo', 'descripcion', 'order', 'slug'
+            'id', 'roles', 'indice', 'titulo', 'descripcion', 'metadata', 'contenido', 'url', 'order', 'slug'
         ]
         
 
@@ -36,9 +36,11 @@ def search(request):
         mq = MultiMatch(query=q, fields=['titulo', 'descripcion'], fuzziness='AUTO')
         posts = PostDocument.search(index='cms').query(mq)
 
+    user = Profile.objects.get(user=request.user)
+
     context = {
         'posts': posts,
-        'roles': roles,
+        'roles': user.roles.all(),
         'id': id
     }
 

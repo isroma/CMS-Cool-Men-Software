@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-configmap
+  namespace: cms
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+  logstash.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    filter {
+      if [kubernetes][labels][app] == "django-container"  {
+        grok {
+          match => { "message" => '\[.*\] "%{WORD:method} %{URIPATH:resource} .*" %{WORD:statusCode} .*' }
+        }
+      }
+      date {
+        match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => ["elastic-service:9200"]
+      }
+    }
