@@ -48,6 +48,37 @@ Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el cont
       echo 'http.cors.enabled: true' >> elasticsearch.yml
       echo 'http.cors.allow-origin: "*"' >> elasticsearch.yml
       ```
+ 11. Creamos los indices para ElasticSearch ejecutando este comando en nuestra terminal:
+      ```
+      curl --request PUT 'http://localhost:9200/nombre_contenedor' \
+           --header 'Content-Type: application/json' \
+           -d '{
+                "mappings": {
+                    "properties": {
+                        "date": {
+                            "type": "search_as_you_type"
+                        },
+                        "user": {
+                            "type": "search_as_you_type"
+                        },
+                        "title": {
+                            "type": "search_as_you_type"
+                        },
+                        "text": {
+                            "type": "search_as_you_type"
+                        },
+                        "metadata": {
+                            "type": "text"
+                        },
+                        "url": {
+                            "type": "text"
+                        }
+                    }
+                }
+            }'
+      ```
+      Donde nombre_contenedor sera el nombre del contenedor que queremos crear.
+      Esto deberia cambiar si añadimos mas campos a lo que se sube a ElasticSearch.
 
 ## Lanzar Django una vez instalado:
 
