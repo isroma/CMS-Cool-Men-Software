@@ -38,7 +38,7 @@
         <input type="hidden" name="signature" value="{{ signature }}">
         <input type="file" name="inpFile" id="inpFile"><br>
         {% for role in user_roles %}
-        <input type="radio" name="selected_role" value={{role}} id={{role}}>
+        <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
         <label for={{role}}> {{ role }} </label>
         {% endfor %}
         <br>
