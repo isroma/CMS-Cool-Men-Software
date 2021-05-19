@@ -58,18 +58,35 @@
 	.first-block{
 		display:flex;
 	}
+
+	.searchText{
+		background: #464648;
+		color: white;
+	}
+
+	.inpFile{
+		margin-left: 25px;
+		width: 80%;
+	}
+	.progress-bar{
+		width: 80%;
+		border-radius: 12px;
+		margin-left: 25px;
+	}
+
 	.btn-subida{
 		margin-top: 23px;
 		margin-left: 25px;
 		width: 80%;
 		border-radius: 12px;
 		transition-duration: 0.4s;
-		color: black;
+		background: #464648;
+		color: white;
 	}
 
 	.btn-subida:hover {
-	background-color: grey; /* Green */
-	color: black;
+	background-color: lightgrey; /* Green */
+	color: white;
 	}
 	.lds-facebook div:nth-child(3) {
 	  left: 56px;
@@ -94,12 +111,40 @@
 		<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 		<body>
 			<div class="row navbar-dark bg-dark">
-				<div class="col-2">
-					<button class="btn-subida" type="submit">Upload</button>
+				<div class="col-2" style="border-right: solid;">
+					<form class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">
+						<!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
+						<input type="hidden" name="redirect" value="{{ redirect_url }}">
+						<input type="hidden" name="max_file_size" value="{{ max_file_size }}">
+						<input type="hidden" name="max_file_count" value="{{ max_file_count }}">
+						<input type="hidden" name="expires" value="{{ expires }}">
+						<input type="hidden" name="signature" value="{{ signature }}">
+						<input type="file" class="inpFile" name="inpFile" id="inpFile"><br>
+						{% for role in user_roles %}
+						<input type="radio" name="selected_role" value={{role}} id={{role}}>
+						<label for={{role}}> {{ role }} </label>
+						{% endfor %}
+						<br>
+						<button class="btn-subida" type="submit">Subir archivo</button>
+					</form>
+			
+					<div class="progress-bar" id="progressBar">
+						<div class="progress-bar-fill">
+							<span class="progress-bar-text">0%</span>
+						</div>
+					</div>
+			
+					<div id="linkText">
+			
+					</div>
+			
+					<div id="link">
+			
+					</div>
 				</div>
 				<div class="col-8">
 					<form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
-						<input class="searchText" id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
+						<input class="searchText" id='searchText' name='searchText' type='text' placeholder="Escribe para buscar...">
 						{% for role in roles %}
 						<input type="radio" name="selected_role" value={{role}} id={{role}} checked>
 						<label for={{role}}> {{ role }} </label>
@@ -249,5 +294,187 @@
 			}
 	  
 		}
+
+	const uploadForm = document.getElementById("uploadForm");
+    const inpFile = document.getElementById("inpFile");
+    const progressBarFill = document.querySelector("#progressBar > .progress-bar-fill");
+    const progressBarText = progressBarFill.querySelector(".progress-bar-text");
+
+    uploadForm.addEventListener("submit", uploadFile);
+
+    function uploadFile(e) {
+        e.preventDefault();
+
+        // Get the checked rol on form
+        const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
+
+        var rol = "container"; // Default if there are no roles set
+        checkboxes.forEach((checkbox) => {
+            rol = checkbox.id;
+        });
+
+        // Replace selected rol on swift url
+        var swift_url = "{{ swift_url }}";
+        swift_url = swift_url.replace("container", rol);
+
+        // Open POST to Swiftstack
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", swift_url, true);
+        xhr.responseType = 'document';
+
+        // Add rol to redirect url
+        var redirect_url = "{{ redirect_url }}"
+        redirect_url = redirect_url.replace("container", rol);
+
+        // Get new signature from server and send to Swiftstack
+        $.ajax({
+            url: "signature/", // the endpoint
+            type: "POST", // http method
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            data: {
+                swift_url: swift_url,
+                redirect_url: redirect_url,
+                max_file_size: "{{ max_file_size }}",
+                max_file_count: "{{ max_file_count }}",
+                expires: "{{ expires }}",
+                container: rol
+            }, // data sent with the get request
+
+            // handle a successful response
+            success: function (json) {
+                uploadForm["signature"].value = json
+                uploadForm["redirect"].value = redirect_url
+                xhr.send(new FormData(uploadForm));
+            },
+
+            // handle a non-successful response
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        })
+
+        // Form for Tika
+        var formData = new FormData();
+        formData.append("file", inpFile.files[0])
+
+        // Progress bar
+        xhr.upload.addEventListener("progress", e => {
+            const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
+
+            progressBarFill.style.width = percent.toFixed(2) + "%";
+            progressBarText.textContent = percent.toFixed(2) + "%";
+        });
+
+        // Tika parse and Elastic send
+        xhr.upload.addEventListener("load", e => {
+            $(document).ready(function () {
+
+                var tikaText;
+                var tikaMetadata;
+                
+                $.ajax({
+                    url: "http://localhost:9998/tika/form", // the endpoint
+                    type: "POST", // http method
+                    target: '#result',
+                    contentType: false,
+                    processData: false,
+                    data: formData, // data sent with the get request
+
+                    beforeSend: function () {
+                        $('#result').html('Loading text and metadata...')
+                        $('#result').show();
+                    },
+
+                    success: function (responseText, statusText, xhr, $form) {
+
+                        tikaText = responseText;
+
+                        $.ajax({
+                            url: "http://localhost:9998/meta/form", // the endpoint
+                            type: "POST", // http method
+                            target: '#result',
+                            contentType: false,
+                            processData: false,
+                            headers: {Accept: "application/json"},
+                            data: formData, // data sent with the get request
+
+                            success: function (responseText, statusText, xhr, $form) {
+
+                                $("#link").load(redirect_url, complete = function () {$("#linkText").html("<br><b> Link: </b>");});
+                                
+                                tikaMetadata = JSON.stringify(responseText, null, 4);
+
+                                // Timeout so it has enough time to get the download url
+                                setTimeout(function () {
+
+                                    var d = new Date();
+
+                                    var month = d.getMonth() + 1;
+                                    var day = d.getDate();
+
+                                    var output = (day < 10 ? '0' : '') + day + '/' +
+                                        (month < 10 ? '0' : '') + month + '/' +
+                                        d.getFullYear();
+                                    
+                                    var hours = d.getHours();
+                                    var minutes =  d.getMinutes();
+                                    
+                                    var time = (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
+
+                                    output = output + " " + time;
+
+                                    var id = redirect_url.replace("http://localhost:5432/upload/finalize/", "")
+                                    id = id.replace("/" + rol, "")
+
+                                    // Upload to ElasticSearch
+                                    $.ajax({
+                                        url: "http://localhost:9200/" + rol + "/_doc/" + id, // the endpoint
+                                        type: "POST", // http method
+                                        dataType: "json",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({
+                                            "date": output,
+                                            "user": "{{ username }}",
+                                            "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
+                                            "text": tikaText,
+                                            "metadata": tikaMetadata,
+                                            "url": $("#link").text().replace(/(\r\n|\n|\r| )/gm, "")
+                                        }), // data sent with the get request
+
+                                        // handle a successful response
+                                        success: function (json) {
+                                            //console.log("FUNCIONA!")
+                                        },
+
+                                        // handle a non-successful response
+                                        error: function (xhr, errmsg, err) {
+                                            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                        }
+                                    })
+                                }, 5000);
+                            },
+                            complete: function () {
+                                //$("#linkText").html("<b> Link: </b>");
+                                $("#result").html("<br> <b> Text: </b>" + tikaText + "<br><br> <b> Metadata: </b>" + tikaMetadata);
+                                $('#result').show();
+                            },
+
+                            // handle a non-successful response
+                            error: function (xhr, errmsg, err) {
+                                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+                            }
+                        });
+
+                    },
+                    // handle a non-successful response
+                    error: function (xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                        $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+                    }
+                });
+            });
+        });
+    }
 </script>
 {% endblock %}

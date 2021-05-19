@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block active_upload %} active {% endblock %}
-{% block color_upload %} style="color: #157ffb;" {% endblock %}
+{% block color_upload %} style="text-decoration: underline white;" {% endblock %}
 {% load static %}
 {% block page_content %}
 
 <style>
     .progress-bar {
+        width: 80%;
+		border-radius: 12px;
+		margin-top: 25px;
         height: 35px;
         width: 250px;
         border: 2px solid darkblue;
@@ -19,16 +22,30 @@
         align-items: center;
         transition: width 0.25s;
     }
+    .change{
+        color:white;
+    }
+    .btn-subida{
+        width: 20%;
+		border-radius: 12px;
+		transition-duration: 0.4s;
+		background: #464648;
+		color: white;
+	}
 
+	.btn-subida:hover {
+	background-color: lightgrey; /* Green */
+	color: white;
+	}
     .progress-bar-text {
         margin-left: 10px;
         font-weight: bold;
     }
 </style>
 
-<html>
+<html class="navbar-dark bg-dark">
 
-<body>
+<body class="change navbar-dark bg-dark">
     <div class="container pt-4">
         <form class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">
             <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
@@ -37,13 +54,14 @@
             <input type="hidden" name="max_file_count" value="{{ max_file_count }}">
             <input type="hidden" name="expires" value="{{ expires }}">
             <input type="hidden" name="signature" value="{{ signature }}">
-            <input type="file" name="inpFile" id="inpFile"><br>
+            <input style="margin-bottom: 15px;" type="file" name="inpFile" id="inpFile"><br><br>
             {% for role in user_roles %}
             <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
             <label for={{role}}> {{ role }} </label>
             {% endfor %}
             <br>
-            <button type="submit">Upload</button>
+            <br>
+            <button class="btn-subida" type="submit">Subir</button>
         </form>
 
         <div class="progress-bar" id="progressBar">
