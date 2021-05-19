@@ -38,7 +38,7 @@
         <input type="hidden" name="signature" value="{{ signature }}">
         <input type="file" name="inpFile" id="inpFile"><br>
         {% for role in user_roles %}
-        <input type="radio" name="selected_role" value={{role}} id={{role}}>
+        <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
         <label for={{role}}> {{ role }} </label>
         {% endfor %}
         <br>
@@ -179,13 +179,34 @@
 
                                 // Timeout so it has enough time to get the download url
                                 setTimeout(function () {
+
+                                    var d = new Date();
+
+                                    var month = d.getMonth() + 1;
+                                    var day = d.getDate();
+
+                                    var output = (day < 10 ? '0' : '') + day + '/' +
+                                        (month < 10 ? '0' : '') + month + '/' +
+                                        d.getFullYear();
+                                    
+                                    var hours = d.getHours();
+                                    var minutes =  d.getMinutes();
+                                    
+                                    var time = (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
+
+                                    output = output + " " + time;
+
+                                    var id = redirect_url.replace("http://localhost:5432/upload/finalize/", "")
+                                    id = id.replace("/" + rol, "")
+
                                     // Upload to ElasticSearch
                                     $.ajax({
-                                        url: "http://elastic-service:9200/" + rol + "/_doc/" + uploadForm["signature"].value, // the endpoint
+                                        url: "http://elastic-service:9200/" + rol + "/_doc/" + id, // the endpoint
                                         type: "POST", // http method
                                         dataType: "json",
                                         contentType: "application/json",
                                         data: JSON.stringify({
+                                            "date": output,
                                             "user": "{{ username }}",
                                             "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
                                             "text": tikaText,
