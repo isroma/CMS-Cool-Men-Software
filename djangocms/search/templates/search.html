@@ -133,7 +133,7 @@
 
       // Search on ElasticSearch
       $.ajax({
-        url: "http://localhost:9200/" + rol + "/_search?pretty", // the endpoint
+        url: "http://elastic-service:9200/" + rol + "/_search?pretty", // the endpoint
         type: "POST", // http method
         dataType: "json",
         contentType: "application/json",
