@@ -44,7 +44,9 @@
     left: 8px;
     animation-delay: -0.24s;
   }
-
+  .change{
+        color:white;
+    }
   .lds-facebook div:nth-child(2) {
     left: 32px;
     animation-delay: -0.12s;
@@ -69,24 +71,26 @@
   }
 </style>
 
-<html>
+<html class="navbar-dark bg-dark">
 
-<body>
-  <form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
-    <input id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
-    {% for role in roles %}
-    <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
-    <label for={{role}}> {{ role }} </label>
-    {% endfor %}
-  </form>
+<body class="change navbar-dark bg-dark">
+  <div class="container pt-4">
+    <form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
+      <input id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
+      {% for role in roles %}
+      <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
+      <label for={{role}}> {{ role }} </label>
+      {% endfor %}
+    </form>
 
-  <div id="loader" class="lds-facebook hidden overlay">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
+    <div id="loader" class="lds-facebook hidden overlay">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
 
-  <div id="result">
+    <div id="result">
+    </div>
   </div>
 </body>
 
