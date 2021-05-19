@@ -29,39 +29,40 @@
 <html>
 
 <body>
-    <form class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">
-        <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
-        <input type="hidden" name="redirect" value="{{ redirect_url }}">
-        <input type="hidden" name="max_file_size" value="{{ max_file_size }}">
-        <input type="hidden" name="max_file_count" value="{{ max_file_count }}">
-        <input type="hidden" name="expires" value="{{ expires }}">
-        <input type="hidden" name="signature" value="{{ signature }}">
-        <input type="file" name="inpFile" id="inpFile"><br>
-        {% for role in user_roles %}
-        <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
-        <label for={{role}}> {{ role }} </label>
-        {% endfor %}
-        <br>
-        <button type="submit">Upload</button>
-    </form>
+    <div class="container pt-4">
+        <form class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">
+            <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
+            <input type="hidden" name="redirect" value="{{ redirect_url }}">
+            <input type="hidden" name="max_file_size" value="{{ max_file_size }}">
+            <input type="hidden" name="max_file_count" value="{{ max_file_count }}">
+            <input type="hidden" name="expires" value="{{ expires }}">
+            <input type="hidden" name="signature" value="{{ signature }}">
+            <input type="file" name="inpFile" id="inpFile"><br>
+            {% for role in user_roles %}
+            <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
+            <label for={{role}}> {{ role }} </label>
+            {% endfor %}
+            <br>
+            <button type="submit">Upload</button>
+        </form>
 
-    <div class="progress-bar" id="progressBar">
-        <div class="progress-bar-fill">
-            <span class="progress-bar-text">0%</span>
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-bar-fill">
+                <span class="progress-bar-text">0%</span>
+            </div>
+        </div>
+
+        <div id="linkText">
+
+        </div>
+
+        <div id="link">
+
+        </div>
+
+        <div id="result">
         </div>
     </div>
-
-    <div id="linkText">
-
-    </div>
-
-    <div id="link">
-
-    </div>
-
-    <div id="result">
-    </div>
-
 </body>
 
 </html>

@@ -72,21 +72,23 @@
 <html>
 
 <body>
-  <form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
-    <input id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
-    {% for role in roles %}
-    <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
-    <label for={{role}}> {{ role }} </label>
-    {% endfor %}
-  </form>
+  <div class="container pt-4">
+    <form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
+      <input id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
+      {% for role in roles %}
+      <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
+      <label for={{role}}> {{ role }} </label>
+      {% endfor %}
+    </form>
 
-  <div id="loader" class="lds-facebook hidden overlay">
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
+    <div id="loader" class="lds-facebook hidden overlay">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
 
-  <div id="result">
+    <div id="result">
+    </div>
   </div>
 </body>
 
