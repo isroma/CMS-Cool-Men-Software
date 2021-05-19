@@ -4,7 +4,70 @@
 {% load static %}
 {% block page_content %}
 
+<style>
+  .lds-facebook.hidden {
+    display: none;
+  }
 
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 999;
+    opacity: 1;
+    transition: all 0.5s;
+  }
+
+  .lds-facebook {
+    display: inline-block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    z-index: 999;
+  }
+
+  .lds-facebook div {
+    display: inline-block;
+    position: absolute;
+    left: 8px;
+    width: 16px;
+    background: #343a40;
+    animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  }
+
+  .lds-facebook div:nth-child(1) {
+    left: 8px;
+    animation-delay: -0.24s;
+  }
+
+  .lds-facebook div:nth-child(2) {
+    left: 32px;
+    animation-delay: -0.12s;
+  }
+
+  .lds-facebook div:nth-child(3) {
+    left: 56px;
+    animation-delay: 0;
+  }
+
+  @keyframes lds-facebook {
+    0% {
+      top: 8px;
+      height: 64px;
+    }
+
+    50%,
+    100% {
+      top: 24px;
+      height: 32px;
+    }
+  }
+</style>
 
 <html>
 
@@ -12,13 +75,16 @@
   <form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
     <input id='searchText' name='searchText' type='text' placeholder="Tu búsqueda...">
     {% for role in roles %}
-    <input type="radio" name="selected_role" value={{role}} id={{role}}>
+    <input type="radio" name="selected_role" value={{role}} id={{role}} checked>
     <label for={{role}}> {{ role }} </label>
     {% endfor %}
-    <div>
-      <button type="submit">Submit</button>
-    </div>
   </form>
+
+  <div id="loader" class="lds-facebook hidden overlay">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
 
   <div id="result">
   </div>
@@ -28,12 +94,33 @@
 
 <script>
   const searchForm = document.getElementById("searchForm");
+  const searchBar = document.getElementById("searchText");
+  var timer = 0;
 
-  searchForm.addEventListener("submit", submitSearch);
+  searchForm.addEventListener('input', updateValue)
 
-  function submitSearch(e) {
-    e.preventDefault();
+  // Search bar function
+  function updateValue(e) {
+    typewatch(function () {
+      if (e.target.value.length >= 3) {
+        submitSearch();
+      } else if (e.target.value.length == 0) {
+        $("#result").html("")
+      }
+    }, 500)
+  }
 
+  // Timer function
+  var typewatch = function () {
+    var timer = 0;
+    return function (callback, ms) {
+      clearTimeout(timer);
+      timer = setTimeout(callback, ms);
+    }
+  }();
+
+
+  function submitSearch() {
     // Get the checked rol on form
     const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
 
@@ -52,36 +139,65 @@
         contentType: "application/json",
         data: JSON.stringify({
           "query": {
-            "query_string": {
-              "query": searchForm["searchText"].value
+            "multi_match": {
+              "query": searchBar.value,
+              "type": "bool_prefix",
+              "fields": [
+                "text",
+                "text._2gram",
+                "text._3gram",
+                "date",
+                "date._2gram",
+                "date._3gram",
+                "user",
+                "user._2gram",
+                "user._3gram",
+                "title",
+                "title._2gram",
+                "title._3gram"
+              ]
             }
           }
         }), // data sent with the get request
-
+        beforeSend: function () {
+          $('#loader').removeClass('hidden')
+        },
         // handle a successful response
         success: function (json) {
+
+          var flag = false;
+
           // Load data from search
+          $("#result").html("")
           for (i = 0; i < json["hits"]["hits"].length; i++) {
             // console.log(json["hits"]["hits"][i]["_source"]["url"])
             if (json["hits"]["hits"][i]["_source"]["text"] != "") {
-              $("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
-                "<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-                "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" +
-                "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] + 
+              $("#result").append("<br><b> Resultado " + (i + 1) + ":</b><br>" +
+                "<b> Título: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+                "<br> <b> Link: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Pulsa para descargar </a>" +
+                "<br> <b> Texto: </b> <br>" + json["hits"]["hits"][i]["_source"]["text"] +
                 "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
                 + "<hr>");
             } else {
-              $("#result").append("<br><b> Resultado " + (i+1) + ":</b><br>" +
-                "<b> Titulo: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
-                "<br> <b> Url: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Link descarga </a>" + 
+              $("#result").append("<br><b> Resultado " + (i + 1) + ":</b><br>" +
+                "<b> Título: </b> <br>" + json["hits"]["hits"][i]["_source"]["title"] +
+                "<br> <b> Link: </b> <br> <a href='" + json["hits"]["hits"][i]["_source"]["url"] + "'> Pulsa para descargar </a>" +
                 "<br> <b> Metadata: </b> <br>" + json["hits"]["hits"][i]["_source"]["metadata"] + "<br>"
                 + "<hr>");
             }
+
+            flag = true;
+          }
+
+          if (!flag) {
+            $("#result").append("No se han encontrado resultados :(");
           }
 
           $('#result').show();
         },
-
+        complete: function () {
+          $('#loader').addClass('hidden')
+        },
         // handle a non-successful response
         error: function (xhr, errmsg, err) {
           console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
