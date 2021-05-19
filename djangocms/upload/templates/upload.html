@@ -27,66 +27,47 @@
 </style>
 
 <html>
-    <body>
-        <!--<form  action="{{ swift_url }}" method="POST" enctype="multipart/form-data">-->  
-        <form  class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">  
-            <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
-            <input type="hidden" name="redirect" value="{{ redirect_url }}">
-            <input type="hidden" name="max_file_size" value="{{ max_file_size }}">
-            <input type="hidden" name="max_file_count" value="{{ max_file_count }}">
-            <input type="hidden" name="expires" value="{{ expires }}">
-            <input type="hidden" name="signature" value="{{ signature }}">
-            <input type="file" name="inpFile" id="inpFile"><br>
-            {% for role in user_roles %}
-            <input type="checkbox" name="selected_role" value={{role}} id={{role}}>
-                <label for={{role}}> {{ role }} </label>
-            {% endfor %}
-            <br>
-            <button type="submit">Upload</button>
-        </form>
 
-        <div class="progress-bar" id="progressBar">
-            <div class="progress-bar-fill">
-                <span class="progress-bar-text">0%</span>
-            </div>
+<body>
+    <form class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">
+        <!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
+        <input type="hidden" name="redirect" value="{{ redirect_url }}">
+        <input type="hidden" name="max_file_size" value="{{ max_file_size }}">
+        <input type="hidden" name="max_file_count" value="{{ max_file_count }}">
+        <input type="hidden" name="expires" value="{{ expires }}">
+        <input type="hidden" name="signature" value="{{ signature }}">
+        <input type="file" name="inpFile" id="inpFile"><br>
+        {% for role in user_roles %}
+        <input type="radio" name="selected_role" value={{role}} id={{role}}>
+        <label for={{role}}> {{ role }} </label>
+        {% endfor %}
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-bar-fill">
+            <span class="progress-bar-text">0%</span>
         </div>
+    </div>
 
-        <div id ="link">        
-        </div>
+    <div id="linkText">
 
-<<<<<<< HEAD
-        <button onclick=exampleTika()>Example</button>
-=======
-        <!-- <button onclick=exampleTika()>Example</button> -->
->>>>>>> develop
+    </div>
 
-        <div id ="result">        
-        </div>
+    <div id="link">
 
-    </body>
+    </div>
+
+    <div id="result">
+    </div>
+
+</body>
+
 </html>
 
 
 <script>
-    function exampleTika(){
-		console.log("running");
-		$.ajax({
-			url : "tika/", // the endpoint
-			type : "GET", // http method
-			data : {}, // data sent with the get request
-
-			// handle a successful response
-			success : function(json) {
-				console.log(json["content"]); // another sanity check
-			},
-
-			// handle a non-successful response
-			error : function(xhr,errmsg,err) {
-				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-			}
-		})
-	}
-
     const uploadForm = document.getElementById("uploadForm");
     const inpFile = document.getElementById("inpFile");
     const progressBarFill = document.querySelector("#progressBar > .progress-bar-fill");
@@ -94,7 +75,7 @@
 
     uploadForm.addEventListener("submit", uploadFile);
 
-    function uploadFile (e) {
+    function uploadFile(e) {
         e.preventDefault();
 
         // Get the checked rol on form
@@ -105,90 +86,145 @@
             rol = checkbox.id;
         });
 
-        // console.log(rol)
-
         // Replace selected rol on swift url
         var swift_url = "{{ swift_url }}";
         swift_url = swift_url.replace("container", rol);
-        // console.log(swift_url)
 
         // Open POST to Swiftstack
         const xhr = new XMLHttpRequest();
         xhr.open("POST", swift_url, true);
         xhr.responseType = 'document';
 
-        // Add container to redirect url
+        // Add rol to redirect url
         var redirect_url = "{{ redirect_url }}"
         redirect_url = redirect_url.replace("container", rol);
-        // console.log(redirect_url)
 
         // Get new signature from server and send to Swiftstack
         $.ajax({
-			url : "signature/", // the endpoint
-			type : "POST", // http method
-            headers: {"X-CSRFToken" : "{{ csrf_token }}"},
-			data : {swift_url : swift_url,
-                    redirect_url : redirect_url,
-                    max_file_size : "{{ max_file_size }}",
-                    max_file_count : "{{ max_file_count }}",
-                    expires : "{{ expires }}",
-                    container : rol}, // data sent with the get request
+            url: "signature/", // the endpoint
+            type: "POST", // http method
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            data: {
+                swift_url: swift_url,
+                redirect_url: redirect_url,
+                max_file_size: "{{ max_file_size }}",
+                max_file_count: "{{ max_file_count }}",
+                expires: "{{ expires }}",
+                container: rol
+            }, // data sent with the get request
 
-			// handle a successful response
-			success : function(json) {
+            // handle a successful response
+            success: function (json) {
                 uploadForm["signature"].value = json
-                uploadForm["redirect"].value = redirect_url      
+                uploadForm["redirect"].value = redirect_url
                 xhr.send(new FormData(uploadForm));
-			},
+            },
 
-			// handle a non-successful response
-			error : function(xhr,errmsg,err) {
-				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-			}
-		})
+            // handle a non-successful response
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        })
 
         // Form for Tika
         var formData = new FormData();
-        formData.append("file", inpFile.files[0]) 
+        formData.append("file", inpFile.files[0])
 
         // Progress bar
         xhr.upload.addEventListener("progress", e => {
             const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
-            
+
             progressBarFill.style.width = percent.toFixed(2) + "%";
             progressBarText.textContent = percent.toFixed(2) + "%";
         });
 
         // Tika parse and Elastic send
         xhr.upload.addEventListener("load", e => {
-            $(document).ready( function() {
+            $(document).ready(function () {
 
-                $("#link").load(redirect_url);
-
+                var tikaText;
+                var tikaMetadata;
+                
                 $.ajax({
-                    url : "http://localhost:9998/tika/form", // the endpoint
-                    type : "POST", // http method
+                    url: "http://tika-service:9998/tika/form", // the endpoint
+                    type: "POST", // http method
                     target: '#result',
                     contentType: false,
                     processData: false,
-                    //headers: {"X-CSRFToken" : "{{ csrf_token }}"},
-                    data : formData, // data sent with the get request
+                    data: formData, // data sent with the get request
 
-                    success: function(responseText, statusText, xhr, $form) {
-                        $("#result").html(responseText);
+                    beforeSend: function () {
+                        $('#result').html('Loading text and metadata...')
                         $('#result').show();
                     },
-                    beforeSerialize: function($form, options) {
-                        $("#result").html("<span class=\"glyphicon glyphicon-refresh spinning\"></span> Loading...");
-                        $("#result").show();
+
+                    success: function (responseText, statusText, xhr, $form) {
+
+                        tikaText = responseText;
+
+                        $.ajax({
+                            url: "http://tika-service:9998/meta/form", // the endpoint
+                            type: "POST", // http method
+                            target: '#result',
+                            contentType: false,
+                            processData: false,
+                            headers: {Accept: "application/json"},
+                            data: formData, // data sent with the get request
+
+                            success: function (responseText, statusText, xhr, $form) {
+
+                                $("#link").load(redirect_url, complete = function () {$("#linkText").html("<br><b> Link: </b>");});
+                                
+                                tikaMetadata = JSON.stringify(responseText, null, 4);
+
+                                // Timeout so it has enough time to get the download url
+                                setTimeout(function () {
+                                    // Upload to ElasticSearch
+                                    $.ajax({
+                                        url: "http://elastic-service:9200/" + rol + "/_doc/" + uploadForm["signature"].value, // the endpoint
+                                        type: "POST", // http method
+                                        dataType: "json",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({
+                                            "user": "{{ username }}",
+                                            "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
+                                            "text": tikaText,
+                                            "metadata": tikaMetadata,
+                                            "url": $("#link").text().replace(/(\r\n|\n|\r| )/gm, "")
+                                        }), // data sent with the get request
+
+                                        // handle a successful response
+                                        success: function (json) {
+                                            //console.log("FUNCIONA!")
+                                        },
+
+                                        // handle a non-successful response
+                                        error: function (xhr, errmsg, err) {
+                                            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                        }
+                                    })
+                                }, 5000);
+                            },
+                            complete: function () {
+                                //$("#linkText").html("<b> Link: </b>");
+                                $("#result").html("<br> <b> Text: </b>" + tikaText + "<br><br> <b> Metadata: </b>" + tikaMetadata);
+                                $('#result').show();
+                            },
+
+                            // handle a non-successful response
+                            error: function (xhr, errmsg, err) {
+                                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+                            }
+                        });
+
                     },
                     // handle a non-successful response
-                    error : function(xhr,errmsg,err) {
+                    error: function (xhr, errmsg, err) {
                         console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
                         $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
                     }
-		        });
-
+                });
             });
         });
     }

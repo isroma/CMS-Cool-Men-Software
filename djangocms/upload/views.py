@@ -8,25 +8,54 @@ import time
 import uuid
 import re
 
-# TODO: clean trash
-
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.conf import settings
 from django.urls import reverse
-from django.template import RequestContext
-
 from urllib.parse import urlparse
 from swiftclient import client
 from tika import parser
 from upload.models import StorageObject
-from upload.forms import ElasticForm
 from users.models import Role
-from search.views import PostDocument
 from users.models import Profile
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 # Create your views here.
 roles = Role.objects.all()
+
+
+def notifications_via_email(container, username, user_email, url):
+    mail_subject = "Nuevo archivo en '" + container + "'"
+    message = render_to_string('download_email.html', {
+        'username': username,
+        'container': container,
+        'url': url
+    })
+    from_email = 'coolmensoftware@gmail.com'
+    email = EmailMultiAlternatives(mail_subject, message, from_email, to=[user_email])
+    email.content_subtype = 'html'
+
+    email.send()
+
+    return 0
+
+
+def notifications_download(pk):
+    so = StorageObject.objects.get(pk=pk)
+
+    storage_url, key, auth_token = get_tempurl_key(so.container)
+    storage_url = storage_url.replace("swiftstack", "django-service")
+    url = "%s/%s/%s" % (storage_url, so.container, so.objectname)
+
+    expires = int(time.time() + 60)
+    path = urlparse(url).path
+
+    hmac_body = 'GET\n%s\n%s' % (expires, path)
+    signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
+    signed_url = '%s?temp_url_sig=%s&temp_url_expires=%s' % (url, signature, expires)
+
+    return str(signed_url)
 
 
 def tika(request):
@@ -108,10 +137,10 @@ def download(request, pk):
     so = StorageObject.objects.get(pk=pk)
 
     storage_url, key, auth_token = get_tempurl_key(so.container)
-    storage_url = storage_url.replace("swiftstack", "localhost")
+    storage_url = storage_url.replace("swiftstack", "django-service")
     url = "%s/%s/%s" % (storage_url, so.container, so.objectname)
 
-    expires = int(time.time() + 60)
+    expires = int(time.time() + 60*60*24*365)
     path = urlparse(url).path
 
     hmac_body = 'GET\n%s\n%s' % (expires, path)
@@ -122,13 +151,10 @@ def download(request, pk):
 
 
 def upload(request):
-    # TODO: check if this will be needed
-    form = ElasticForm(request.POST)
-
     rol = request.GET.get('rol')
 
     storage_url, key, auth_token = get_tempurl_key(settings.SWIFT_CONTAINER)
-    storage_url = storage_url.replace("swiftstack", "localhost")
+    storage_url = storage_url.replace("swiftstack", "django-service")
     prefix = str(uuid.uuid4())
 
     # Creating dinamically containers according to Django roles
@@ -149,7 +175,7 @@ def upload(request):
 
     max_file_size = 5*1024*1024*1024
     max_file_count = 1
-    expires = int(time.time() + 5*60)
+    expires = int(time.time() + 60*60*24*365)
     swift_url = "%s/%s/%s/" % (storage_url, settings.SWIFT_CONTAINER, prefix)
     redirect_url = "http://%s%s" % (request.get_host(), reverse(finalize, kwargs={'prefix': prefix, 'container': settings.SWIFT_CONTAINER}))
     path = urlparse(swift_url).path
@@ -163,21 +189,8 @@ def upload(request):
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
         'expires': expires, 'signature': signature, 'user_roles': user.roles.all(),
-        'form': form
+        'username': user.user.username
     }
-
-    # TODO: this is not working yet
-    # PostDocument.init()
-
-    # post = PostDocument(
-    #     indice = 'cms',
-    #     roles = form['roles'].value(),
-    #     titulo = form['titulo'].value(),
-    #     descripcion = form['descripcion'].value(),
-    #     url = [redirect_url]
-    # )
-
-    # post.save()
 
     return render(request, 'upload.html', context)
     
@@ -200,5 +213,20 @@ def finalize(request, prefix, container):
             prefix=prefix)
         dbentry.save()
         ids.append(dbentry.id)
+
+    for role in roles:
+        if str(role) == str(container):
+            role_id = role.id
+
+    for user in Profile.objects.filter(roles=role_id):
+        if user.user.username != 'admin':
+            for id in ids:
+                url = notifications_download(id)
+                url = url.replace(" ", "%20")
+
+            # This is needed due to Gmail blocking our mail "spam" hehe
+            time.sleep(1)
+            notifications_via_email(container, user.user.username, user.user.email, url)
+
 
     return render(request, 'finalize.html', {'ids': ids, 'host': request.get_host()})

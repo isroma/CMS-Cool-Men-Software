@@ -1,14 +1,6 @@
-# Arquitectura legacy (con Docker)
-
-ElasticSearch se despliega con Docker a la vez que Django y PostgreSQL, hay que tener cuidado únicamente con que cada vez que se indexe algo llamar al siguiente comando si queremos reindexar:
-
-```
-docker exec -it <container_id> python manage.py search_index --rebuild
-```
-
 # Django legacy (con Docker)
 
-### **Instalación** de Django:
+## Primera instalación de Django:
 
 Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el container o las imágenes.
 
@@ -50,8 +42,14 @@ Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el cont
       docker exec -it <container_id> swift -A ST_AUTH -U ST_USER -K ST_KEY post container -H "X-Container-Meta-Access-Control-Allow-Origin:*"
       ```
       Donde ST_AUTH es algo como “http://swiftstack:8080/auth/v1.0“ y ST_USER y ST_KEY son usuario y contraseña de Swiftstack. 
+ 10. Para habilitar la subida de archivos a ElasticSearch tambien es necesario ejecutar estos comando en la maquina de ElasticSearch:
+      ```
+      cd /opt/bitnami/elasticsearch/config/
+      echo 'http.cors.enabled: true' >> elasticsearch.yml
+      echo 'http.cors.allow-origin: "*"' >> elasticsearch.yml
+      ```
 
-### Lanzar Django una vez instalado:
+## Lanzar Django una vez instalado:
 
   1. Ahora cada vez que queramos lanzar Django solo es necesario ejecutar un comando
       ```
@@ -65,9 +63,10 @@ Estos pasos solo se tendrán que realizar una vez, a no ser que borremos el cont
       ```
       docker exec -it <container_id> pip install -r requirements.txt   
       ```
+
 # Anexo
 
-### Por qué no movemos los archivos de Docker a /architecture
+## Por qué no movemos los archivos de Docker a /architecture
 
 Desafortunadamente, por razones prácticas y de seguridad, si se quiere añadir o copiar contenido local (como requirements.txt), debe estar alojado en el mismo path que el Dockerfile.
 

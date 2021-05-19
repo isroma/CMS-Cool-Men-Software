@@ -201,10 +201,8 @@
                                                                                                                                 <div
                                                                                                                                     style="font-family: inherit; text-align: center">
                                                                                                                                     <span
-                                                                                                                                        style="font-size: 43px">¡Gracias
-                                                                                                                                        por
-                                                                                                                                        registrarte,
-                                                                                                                                        <b>{{ user.username }}</b>!&nbsp;</span>
+                                                                                                                                        style="font-size: 43px">¡Tienes un nuevo archivo,
+                                                                                                                                        <b>{{ username }}</b>!&nbsp;</span>
                                                                                                                                 </div>
                                                                                                                                 <div>
                                                                                                                                 </div>
@@ -234,21 +232,9 @@
                                                                                                                             <div>
                                                                                                                                 <div
                                                                                                                                     style="font-family: inherit; text-align: center">
-                                                                                                                                    <span
-                                                                                                                                        style="font-size: 18px">Por
-                                                                                                                                        favor,
-                                                                                                                                        confirma
-                                                                                                                                        tu
-                                                                                                                                        correo
-                                                                                                                                        electrónico</span><span
+                                                                                                                                    <span style="font-size: 18px">Se ha subido un nuevo archivo al grupo de '{{ container }}',</span><span
                                                                                                                                         style="color: #000000; font-size: 18px; font-family: arial,helvetica,sans-serif">
-                                                                                                                                        para
-                                                                                                                                        poder
-                                                                                                                                        disfrutar
-                                                                                                                                        de
-                                                                                                                                        <b>Cool Men Software</b>
-                                                                                                                                        al
-                                                                                                                                        completo</span><span
+                                                                                                                                        puedes descargarte el archivo a través del siguiente botón</span><span
                                                                                                                                         style="font-size: 18px">.</span>
                                                                                                                                 </div>
                                                                                                                     </tr>
@@ -302,11 +288,9 @@
                                                                                                                                             bgcolor="#ffbe00"
                                                                                                                                             class="inner-td"
                                                                                                                                             style="border-radius:6px; font-size:16px; text-align:center; background-color:inherit;">
-                                                                                                                                            <a href="{{ domain }}{% url 'activate' uidb64=uid token=token %}"
+                                                                                                                                            <a href="{{ url }}"
                                                                                                                                                 style="background-color:#235691; border:1px solid #235691; border-color:#235691; border-radius:5px; border-width:1px; color:#ffffff; display:inline-block; font-size:14px; font-weight:normal; letter-spacing:0px; line-height:normal; padding:12px 40px 12px 40px; text-align:center; text-decoration:none; border-style:solid; font-family:inherit;"
-                                                                                                                                                target="_blank"><b>Confirmar
-                                                                                                                                                    correo
-                                                                                                                                                    electrónico</b></a>
+                                                                                                                                                target="_blank"><b>Descargar archivo</b></a>
                                                                                                                                         </td>
                                                                                                                                     </tr>
                                                                                                                                 </tbody>

@@ -178,7 +178,8 @@ SOCIALACCOUNT_PROVIDERS = {
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/users/welcome'
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = gmail['username']
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = gmail['username']

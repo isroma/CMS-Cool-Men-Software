@@ -33,5 +33,6 @@ spec:
       containers:
       - name: tika-container
         image: apache/tika:latest
+        args: ['--cors "http://django-service:5432"', "--enableFileUrl", "--enableUnsecureFeatures", "--includeStack"]
         ports:
         - containerPort: 9998

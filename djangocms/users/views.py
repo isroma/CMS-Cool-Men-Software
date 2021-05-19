@@ -61,14 +61,13 @@ def register(request):
                 mail_subject = 'Activa tu cuenta de Cool Men Software'
                 message = render_to_string('email.html', {
                     'user': user,
-                    'domain': 'http://localhost:8000',
+                    'domain': 'http://localhost:5432',
                     'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
                     'token': account_activation_token.make_token(user),
                 })
                 from_email = 'coolmensoftware@gmail.com'
                 to_email = form.cleaned_data.get('email')
-                email = EmailMultiAlternatives(
-                    mail_subject, message, from_email, to=[to_email])
+                email = EmailMultiAlternatives(mail_subject, message, from_email, to=[to_email])
                 email.content_subtype = 'html'
 
                 email.send()
@@ -254,5 +253,8 @@ def profile(request):
         for i in range(Role.objects.count()):
             user.roles.add(Role.objects.get(pk=i + 1))
             context['admin_form'] = True
+
+    # This deletes the form but its interesting to have that form for possible future needs
+    context['admin_form'] = True
 
     return render(request, 'profile.html', context)

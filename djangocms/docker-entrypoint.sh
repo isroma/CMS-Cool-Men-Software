@@ -2,7 +2,7 @@
 
 # Apply CORS to SwiftStack
 echo "----- Applying CORS -----"
-swift -A "http://swiftstack:8080/auth/v1.0" -U test -K test post container -H "X-Container-Meta-Access-Control-Allow-Origin:*"
+swift -A "http://swift-service:8080/auth/v1.0" -U test -K test post container -H "X-Container-Meta-Access-Control-Allow-Origin:*"
 
 # Create superuser if it doesnt exists on database
 echo "----- Create superuser if necessary -----"
