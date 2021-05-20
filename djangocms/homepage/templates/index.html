@@ -134,7 +134,12 @@
 		background: #464648;
 		color: white;
 	}
-
+	#linkText{
+		margin-left:25px;
+	}
+	#link{
+		margin-left:25px;
+	}
 	.btn-subida:hover {
 	background-color: lightgrey; /* Green */
 	color: white;
@@ -450,11 +455,6 @@
                     processData: false,
                     data: formData, // data sent with the get request
 
-                    beforeSend: function () {
-                        $('#result').html('Loading text and metadata...')
-                        $('#result').show();
-                    },
-
                     success: function (responseText, statusText, xhr, $form) {
 
                         tikaText = responseText;
@@ -524,13 +524,13 @@
                                 }, 5000);
                             },
                             complete: function () {
-                                
+                                alert("Archivo subido :)");
                             },
 
                             // handle a non-successful response
                             error: function (xhr, errmsg, err) {
                                 console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                                
+                                alert("Error en subida");
                             }
                         });
 
