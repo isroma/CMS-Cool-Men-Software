@@ -3,82 +3,546 @@
 {% block color_index %} style="color: #157ffb;" {% endblock %}
 {% load static %}
 {% block page_content %}
+<style>
+	.lds-facebook.hidden {
+	  display: none;
+	}
+  
+	.overlay {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 100vh;
+	  background: rgba(255, 255, 255, 0.7);
+	  z-index: 999;
+	  opacity: 1;
+	  transition: all 0.5s;
+	}
+	.popup .overlay {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(0, 0, 0, 0.7);
+		z-index: 1;
+		display: none;
+	}
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	.popup .content {
+		overflow: auto;
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) scale(0);
+		background: #fff;
+		width: 70%;
+		height: 85%;
+		z-index: 2;
+		text-align: center;
+		padding: 20px;
+		box-sizing: border-box;
+		font-family: "Open Sans", sans-serif;
+	}
 
-<div class="container">
-	<div class="user-container">
-		<div class="panel" id="panel">
-			<div class="component">
-				<img src="{% static 'img/file.png' %}" alt="Fichero" class="image" >
-				<p> prueba.txt </p>
+	.popup .close-btn {
+		cursor: pointer;
+		position: absolute;
+		right: 20px;
+		top: 20px;
+		width: 30px;
+		height: 30px;
+		background: #222;
+		color: #fff;
+		font-size: 25px;
+		font-weight: 600;
+		line-height: 30px;
+		text-align: center;
+		border-radius: 50%;
+	}
+
+	.popup.active .overlay {
+		display: block;
+	}
+
+	.popup.active .content {
+		transition: all 300ms ease-in-out;
+		transform: translate(-50%, -50%) scale(1);
+	}
+
+	.lds-facebook {
+	  display: inline-block;
+	  position: fixed;
+	  top: 50%;
+	  left: 50%;
+	  width: 80px;
+	  height: 80px;
+	  z-index: 999;
+	}
+  
+	.lds-facebook div {
+	  display: inline-block;
+	  position: absolute;
+	  left: 8px;
+	  width: 16px;
+	  background: #343a40;
+	  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+	}
+  
+	.lds-facebook div:nth-child(1) {
+	  left: 8px;
+	  animation-delay: -0.24s;
+	}
+	.form{
+		margin-top: 20px;
+		margin-bottom: 15px;
+	}
+	.row{
+		color: white;
+	}
+
+	.lds-facebook div:nth-child(2) {
+	  left: 32px;
+	  animation-delay: -0.12s;
+	}
+	.first-block{
+		display:flex;
+	}
+
+	.searchText{
+		background: #464648;
+		color: white;
+	}
+
+	.inpFile{
+		margin-left: 25px;
+		width: 80%;
+	}
+	.progress-bar{
+		width: 80%;
+		border-radius: 12px;
+		margin-left: 25px;
+	}
+
+	.btn-subida{
+		margin-top: 23px;
+		margin-left: 25px;
+		width: 80%;
+		border-radius: 12px;
+		transition-duration: 0.4s;
+		background: #464648;
+		color: white;
+	}
+	#linkText{
+		margin-left:25px;
+	}
+	#link{
+		margin-left:25px;
+	}
+	.btn-subida:hover {
+	background-color: lightgrey; /* Green */
+	color: white;
+	}
+	.lds-facebook div:nth-child(3) {
+	  left: 56px;
+	  animation-delay: 0;
+	}
+  
+	@keyframes lds-facebook {
+	  0% {
+		top: 8px;
+		height: 64px;
+	  }
+  
+	  50%,
+	  100% {
+		top: 24px;
+		height: 32px;
+	  }
+	}
+  </style>
+  
+	<html class="navbar-dark bg-dark">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+		<body>
+			<div class="row navbar-dark bg-dark">
+				<div class="col-2" style="border-right: solid;">
+					<form class="form" name="uploadForm" id="uploadForm" enctype="multipart/form-data">
+						<!-- This field shouldn't be neccesary but if its deleted the POST doesn't work -->
+						<input type="hidden" name="redirect" value="{{ redirect_url }}">
+						<input type="hidden" name="max_file_size" value="{{ max_file_size }}">
+						<input type="hidden" name="max_file_count" value="{{ max_file_count }}">
+						<input type="hidden" name="expires" value="{{ expires }}">
+						<input type="hidden" name="signature" value="{{ signature }}">
+						<input type="file" class="inpFile" name="inpFile" id="inpFile"><br><br><br>
+						<div style="margin-left: 25px;">
+							{% for role in user_roles %}
+							<input type="radio" name="selected_role" value={{role}} id={{role}}>
+							<label for={{role}}> {{ role }} </label><hr>
+							{% endfor %}
+						</div>
+						<br>
+						<button class="btn-subida" type="submit">Subir archivo</button>
+					</form>
+			
+					<div class="progress-bar" id="progressBar">
+						<div class="progress-bar-fill">
+							<span class="progress-bar-text">0%</span>
+						</div>
+					</div>
+			
+					<div id="linkText">
+			
+					</div>
+			
+					<div id="link">
+			
+					</div>
+				</div>
+				<div class="col-8">
+					<form class="form" name="searchForm" id="searchForm" enctype="multipart/form-data">
+						<input class="searchText" id='searchText' name='searchText' type='text' placeholder="Escribe para buscar...">
+						{% for role in roles %}
+						<input type="radio" name="selected_role_search" value={{role}} id={{role}} checked>
+						<label for={{role}}> {{ role }} </label>
+						{% endfor %}
+					</form>
+						<div class="user-container">	
+							<div id="loader" class="lds-facebook hidden overlay">
+								<div></div>
+								<div></div>
+								<div></div>
+							</div>			
+							<div id="result">
+							</div>
+						</div>
+				</div>
+				<div class="col-2">
+
+				</div>
 			</div>
-			<div class="component">
-				<img src="{% static 'img/imagen.png' %}" alt="Imagen" class="image" >
-				<p> prueba.png </p>
-			</div>
-		</div>
-	</div>
-	<div>
-		<div>
-			<button onclick="sendFile()">
-				Texto
-			</button>
-			<button onclick="sendImagen()">
-				Imagen
-			</button>
-		</div>
-	</div>
-</div>
+			<p id="demo"></p>
+		</body>
+	</html>
 
-
-<!-- @TODO falta implementarlo con Django, es solo una demo no me mateis :( -->
-<script>
-	function sendFile() {
+	<script>
+		const searchForm = document.getElementById("searchForm");
+		const searchBar = document.getElementById("searchText");
 		var type = "{% static 'img/file.png' %}";
-		var name = "Prueba1.txt";
-		const fileHTML = 
-		`
-			<div class="component">
-				<img src="${type}" alt="Archivo" class="image" >
-				<p> ${name} </p>
-			</div>
-		`;
-		$("#panel").append(fileHTML);
-	}
-
-	function sendImagen() {
-		var tipo = "{% static 'img/imagen.png' %}";
-		var name = "Prueba1.txt";
-		const fileHTML = 
-		`
-			<div class="component">
-				<img src="${tipo}" alt="Imagen" class="image" >
-				<p> ${name} </p>
-			</div>
-		`;
-		$("#panel").append(fileHTML);
-	}
-
-	function exampleTika(){
-		console.log("running");
-		$.ajax({
-			url : "random_url/", // the endpoint
-			type : "GET", // http method
-			data : {}, // data sent with the get request
-
-			// handle a successful response
-			success : function(json) {
-				console.log(json["content"]); // another sanity check
-			},
-
-			// handle a non-successful response
-			error : function(xhr,errmsg,err) {
-				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+		var timer = 0;
+	  
+		searchForm.addEventListener('input', updateValue);
+	  
+		// Search bar function
+		function updateValue(e) {
+		  typewatch(function () {
+			if (e.target.value.length >= 3) {
+			  submitSearch();
+			} else if (e.target.value.length == 0) {
+			  $("#result").html("")
 			}
-		})
+		  }, 500)
+		}
+	  
+		// Timer function
+		var typewatch = function () {
+		  var timer = 0;
+		  return function (callback, ms) {
+			clearTimeout(timer);
+			timer = setTimeout(callback, ms);
+		  }
+		}();
+	  
+		function submitSearch() {
+			// Get the checked rol on form
+			const checkboxes = document.querySelectorAll('input[name="selected_role_search"]:checked');
+			
+			var rol = " "; // Default if there are no roles set
+			checkboxes.forEach((checkbox) => {
+			rol = checkbox.id;
+			});
+		
+			if (rol != " ") {
+		
+			// Search on ElasticSearch
+			$.ajax({
+				url: "http://localhost:9200/" + rol + "/_search?pretty", // the endpoint
+				type: "POST", // http method
+				dataType: "json",
+				contentType: "application/json",
+				data: JSON.stringify({
+				"query": {
+					"multi_match": {
+					"query": searchBar.value,
+					"type": "bool_prefix",
+					"fields": [
+						"text",
+						"text._2gram",
+						"text._3gram",
+						"date",
+						"date._2gram",
+						"date._3gram",
+						"user",
+						"user._2gram",
+						"user._3gram",
+						"title",
+						"title._2gram",
+						"title._3gram"
+					]
+					}
+				}
+				}), // data sent with the get request
+				beforeSend: function () {
+				$('#loader').removeClass('hidden')
+				},
+				// handle a successful response
+				success: function (json) {
+				var innerHTML="";
+				var flag = false;
+		
+				// Load data from search
+				$("#result").html("")
+				for (i = 0; i < json["hits"]["hits"].length; i++) {
+					if (json["hits"]["hits"][i]["_source"]["text"] != "") {
+						innerHTML = `
+						<div class="component">
+							<img onclick="togglePopup(${[i]})" src="${type}" alt="Archivo" class="image" >
+							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
+							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
+								Descargar
+							</a>
+						</div>
+						<div class="popup" id="popup-${[i]}">
+							<div class="overlay"></div>
+								<div class="content">
+									<div class="close-btn" onclick="togglePopup(${[i]})">&times;</div>
+									<p style="color: black;white-space: normal !important;word-wrap:break-word;margin: 70px;">${json["hits"]["hits"][i]["_source"]["text"]}</p>
+									</div>
+								</div>
+							</div>		
+						</div>
+						`;
+					} else {
+						innerHTML = `
+						<div class="component">
+							<img onclick="togglePopup(${[i]})" src="${type}" alt="Archivo" class="image" >
+							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
+							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
+								Descargar
+							</a>
+						</div>
+						<div class="popup" id="popup-${[i]}">
+							<div class="overlay"></div>
+								<div class="content">
+									<div class="close-btn" onclick="togglePopup(${[i]})">&times;</div>
+									<p style="color: black;white-space: normal !important;word-wrap:break-word;margin: 70px;">${json["hits"]["hits"][i]["_source"]["text"]}</p>
+									</div>
+								</div>
+							</div>		
+						</div>
+						`;
+					}
+					$("#result").append(innerHTML);
+					innerHTML="";
+					flag = true;
+				}
+				if (!flag) {
+					$("#result").append("No se han encontrado resultados :(");
+				}
+		
+				$('#result').show();
+				},
+				complete: function () {
+				$('#loader').addClass('hidden')
+				},
+				// handle a non-successful response
+				error: function (xhr, errmsg, err) {
+				console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+				}
+			})
+		
+			}
+	  
+		}
+	
+	function togglePopup(n) {
+		document.getElementById("popup-" + n).classList.toggle("active");
 	}
 
-</script>
+	const uploadForm = document.getElementById("uploadForm");
+    const inpFile = document.getElementById("inpFile");
+    const progressBarFill = document.querySelector("#progressBar > .progress-bar-fill");
+    const progressBarText = progressBarFill.querySelector(".progress-bar-text");
 
+    uploadForm.addEventListener("submit", uploadFile);
+
+    function uploadFile(e) {
+        e.preventDefault();
+
+        // Get the checked rol on form
+        const checkboxes = document.querySelectorAll('input[name="selected_role"]:checked');
+
+        var rol = "container"; // Default if there are no roles set
+        checkboxes.forEach((checkbox) => {
+            rol = checkbox.id;
+        });
+
+        // Replace selected rol on swift url
+        var swift_url = "{{ swift_url }}";
+        swift_url = swift_url.replace("container", rol);
+
+        // Open POST to Swiftstack
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", swift_url, true);
+        xhr.responseType = 'document';
+
+        // Add rol to redirect url
+        var redirect_url = "{{ redirect_url }}"
+        redirect_url = redirect_url.replace("container", rol);
+
+        // Get new signature from server and send to Swiftstack
+        $.ajax({
+            url: "signature/", // the endpoint
+            type: "POST", // http method
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            data: {
+                swift_url: swift_url,
+                redirect_url: redirect_url,
+                max_file_size: "{{ max_file_size }}",
+                max_file_count: "{{ max_file_count }}",
+                expires: "{{ expires }}",
+                container: rol
+            }, // data sent with the get request
+
+            // handle a successful response
+            success: function (json) {
+                uploadForm["signature"].value = json
+                uploadForm["redirect"].value = redirect_url
+                xhr.send(new FormData(uploadForm));
+            },
+
+            // handle a non-successful response
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        })
+
+        // Form for Tika
+        var formData = new FormData();
+        formData.append("file", inpFile.files[0])
+
+        // Progress bar
+        xhr.upload.addEventListener("progress", e => {
+            const percent = e.lengthComputable ? (e.loaded / e.total) * 100 : 0;
+
+            progressBarFill.style.width = percent.toFixed(2) + "%";
+            progressBarText.textContent = percent.toFixed(2) + "%";
+        });
+
+        // Tika parse and Elastic send
+        xhr.upload.addEventListener("load", e => {
+            $(document).ready(function () {
+
+                var tikaText;
+                var tikaMetadata;
+                
+                $.ajax({
+                    url: "http://localhost:9998/tika/form", // the endpoint
+                    type: "POST", // http method
+                    target: '#result',
+                    contentType: false,
+                    processData: false,
+                    data: formData, // data sent with the get request
+
+                    success: function (responseText, statusText, xhr, $form) {
+
+                        tikaText = responseText;
+
+                        $.ajax({
+                            url: "http://localhost:9998/meta/form", // the endpoint
+                            type: "POST", // http method
+                            target: '#result',
+                            contentType: false,
+                            processData: false,
+                            headers: {Accept: "application/json"},
+                            data: formData, // data sent with the get request
+
+                            success: function (responseText, statusText, xhr, $form) {
+
+                                $("#link").load(redirect_url, complete = function () {$("#linkText").html("<br><b> Link: </b>");});
+                                
+                                tikaMetadata = JSON.stringify(responseText, null, 4);
+
+                                // Timeout so it has enough time to get the download url
+                                setTimeout(function () {
+
+                                    var d = new Date();
+
+                                    var month = d.getMonth() + 1;
+                                    var day = d.getDate();
+
+                                    var output = (day < 10 ? '0' : '') + day + '/' +
+                                        (month < 10 ? '0' : '') + month + '/' +
+                                        d.getFullYear();
+                                    
+                                    var hours = d.getHours();
+                                    var minutes =  d.getMinutes();
+                                    
+                                    var time = (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
+
+                                    output = output + " " + time;
+
+                                    var id = redirect_url.replace("http://localhost:5432/homepage/finalize/", "")
+                                    id = id.replace("/" + rol, "")
+
+                                    // Upload to ElasticSearch
+                                    $.ajax({
+                                        url: "http://localhost:9200/" + rol + "/_doc/" + id, // the endpoint
+                                        type: "POST", // http method
+                                        dataType: "json",
+                                        contentType: "application/json",
+                                        data: JSON.stringify({
+                                            "date": output,
+                                            "user": "{{ username }}",
+                                            "title": inpFile.value.replace(/C:\\fakepath\\/i, ''),
+                                            "text": tikaText,
+                                            "metadata": tikaMetadata,
+                                            "url": $("#link").text().replace(/(\r\n|\n|\r| )/gm, "")
+                                        }), // data sent with the get request
+
+                                        // handle a successful response
+                                        success: function (json) {
+                                            //console.log("FUNCIONA!")
+                                        },
+
+                                        // handle a non-successful response
+                                        error: function (xhr, errmsg, err) {
+                                            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                        }
+                                    })
+                                }, 5000);
+                            },
+                            complete: function () {
+                                alert("Archivo subido :)");
+                            },
+
+                            // handle a non-successful response
+                            error: function (xhr, errmsg, err) {
+                                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                                alert("Error en subida");
+                            }
+                        });
+
+                    },
+                    // handle a non-successful response
+                    error: function (xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                        $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+                    }
+                });
+            });
+        });
+    }
+</script>
 {% endblock %}

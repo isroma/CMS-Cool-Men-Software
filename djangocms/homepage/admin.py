@@ -1,4 +1,5 @@
 from django.contrib import admin
-from .models import StorageObject
+from homepage.models import StorageObject
 
+# Register your models here.
 admin.site.register(StorageObject)

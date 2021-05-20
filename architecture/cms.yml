@@ -1,0 +1,539 @@
+##### POSTGRES
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+  labels:
+    type: local
+  namespace: cms
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/postgres-pv
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  labels:
+    type: local
+  namespace: cms
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  volumeName: postgres-pv
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: cms
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres-container
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  namespace: cms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-container
+  template:
+    metadata:
+      labels:
+        app: postgres-container
+        tier: backend
+    spec:
+      containers:
+        - name: postgres-container
+          image: postgres:latest
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+
+            - name: POSTGRES_PASSWORD
+              value: postgres
+
+            - name: POSTGRES_DB
+              value: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-volume-mount
+              mountPath: /var/lib/postgresql/data
+
+      volumes:
+        - name: postgres-volume-mount
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+---
+##### ELASTIC
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-service
+  namespace: cms
+spec:
+  type: ClusterIP
+  selector:
+    app: elastic-container
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-deployment
+  namespace: cms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic-container
+  template:
+    metadata:
+      labels:
+        app: elastic-container
+    spec:
+      containers:
+        - name: elastic-container
+          image: bitnami/elasticsearch
+          ports:
+              - containerPort: 9200
+
+---
+##### KIBANA
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-deployment
+  namespace: cms
+  labels:
+    k8s-app: kibana-cms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana-cms
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana-cms
+    spec:
+      containers:
+      - name: kibana-cms
+        image: docker.elastic.co/kibana/kibana-oss:6.8.4
+        env:
+          - name: ELASTICSEARCH_URL
+            value: http://elastic-service:9200
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+  namespace: cms
+  labels:
+    k8s-app: kibana-cms
+    kubernetes.io/name: "Kibana"
+spec:
+  type: NodePort
+  ports:
+  - port: 5601
+    protocol: TCP
+    targetPort: ui
+    nodePort: 32010
+  selector:
+    k8s-app: kibana-cms
+
+---
+##### LOGSTASH
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-configmap
+  namespace: cms
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+  logstash.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    filter {
+      if [kubernetes][labels][app] == "django-container"  {
+        grok {
+          match => { "message" => '\[.*\] "%{WORD:method} %{URIPATH:resource} .*" %{WORD:statusCode} .*' }
+        }
+      }
+      date {
+        match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => ["elastic-service:9200"]
+      }
+    }
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash-deployment
+  namespace: cms
+spec:
+  selector:
+    matchLabels:
+      app: logstash-cms
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: logstash-cms
+    spec:
+      containers:
+      - name: logstash-cms
+        image: docker.elastic.co/logstash/logstash:6.3.0
+        ports:
+        - containerPort: 5044
+        volumeMounts:
+          - name: config-volume
+            mountPath: /usr/share/logstash/config
+          - name: logstash-pipeline-volume
+            mountPath: /usr/share/logstash/pipeline
+      volumes:
+      - name: config-volume
+        configMap:
+          name: logstash-configmap
+          items:
+            - key: logstash.yml
+              path: logstash.yml
+      - name: logstash-pipeline-volume
+        configMap:
+          name: logstash-configmap
+          items:
+            - key: logstash.conf
+              path: logstash.conf
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: logstash-service
+  namespace: cms
+spec:
+  selector:
+    app: logstash-cms
+  ports:
+  - protocol: TCP
+    port: 5044
+    targetPort: 5044
+
+---
+##### DJANGO
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+  namespace: cms
+spec:
+  type: NodePort
+  selector:
+    app: django-container
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+  labels:
+    app: django
+  namespace: cms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django-container
+  template:
+    metadata:
+      labels:
+        app: django-container
+    spec:
+      containers:
+        - name: django
+          image: cms/django:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5432
+
+---
+##### SWIFT
+apiVersion: v1
+kind: Service
+metadata:
+  name: swift-service
+  namespace: cms
+spec:
+  type: ClusterIP
+  selector:
+    app: swift-container
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swift-deployment
+  namespace: cms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swift-container
+  template:
+    metadata:
+      labels:
+        app: swift-container
+    spec:
+      containers:
+        - name: swift-container
+          image: swiftstack/picoswiftstack
+          ports:
+            - containerPort: 8080
+
+---
+##### TIKA
+apiVersion: v1
+kind: Service
+metadata:
+  name: tika-service
+  namespace: cms
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9998
+      targetPort: 9998
+  selector:
+    app: tika
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tika-deployment
+  namespace: cms
+  labels:
+    app: tika
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tika
+  template:
+    metadata:
+      labels:
+        app: tika
+    spec:
+      containers:
+      - name: tika-container
+        image: apache/tika:latest
+        ports:
+        - containerPort: 9998
+
+---
+##### FILEBEAT
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: filebeat
+subjects:
+- kind: ServiceAccount
+  name: filebeat
+  namespace: cms
+roleRef:
+  kind: ClusterRole
+  name: filebeat
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: filebeat
+  labels:
+    k8s-app: filebeat
+rules:
+- apiGroups: [""]
+  resources:
+  - namespaces
+  - pods
+  - nodes
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups: ["apps"]
+  resources:
+    - replicasets
+  verbs: ["get", "list", "watch"]
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: filebeat
+  namespace: cms
+  labels:
+    k8s-app: filebeat
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: cms
+  labels:
+    k8s-app: filebeat
+data:
+  filebeat.yml: |-
+    filebeat.inputs:
+    - type: container
+      paths:
+        - /var/log/containers/*.log
+      processors:
+        - add_kubernetes_metadata:
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+    processors:
+      - add_host_metadata:
+
+    output.logstash:
+      hosts: ['${LOGSTASH_URL}']
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: filebeat
+  namespace: cms
+  labels:
+    k8s-app: filebeat
+spec:
+  selector:
+    matchLabels:
+      k8s-app: filebeat
+  template:
+    metadata:
+      labels:
+        k8s-app: filebeat
+    spec:
+      serviceAccountName: filebeat
+      terminationGracePeriodSeconds: 30
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: filebeat
+        image: docker.elastic.co/beats/filebeat:7.12.0
+        args: [
+          "-c", "/etc/filebeat.yml",
+          "-e",
+        ]
+        env:
+        - name: LOGSTASH_URL
+          value: "logstash-service:5044"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          runAsUser: 0
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/filebeat.yml
+          readOnly: true
+          subPath: filebeat.yml
+        - name: data
+          mountPath: /usr/share/filebeat/data
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: varlog
+          mountPath: /var/log
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 0640
+          name: filebeat-config
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: data
+        hostPath:
+          path: /var/lib/filebeat-data
+          type: DirectoryOrCreate

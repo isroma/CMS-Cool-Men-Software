@@ -1,3 +1,5 @@
+# Deprecated - for legacy version
+
 version: "3.3"
 
 services:
@@ -6,11 +8,11 @@ services:
     image: swiftstack/picoswiftstack
     ports: 
       - "8080:8080"
-
+  
   elasticsearch:
     image: bitnami/elasticsearch
     ports:
-      - "9200:31000"
+      - "9200:9200"
 
   db:
     image: postgres
@@ -20,6 +22,19 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
+  tika:
+    image: apache/tika:1.25
+    ports:
+      - "9998:9998"
+    command:
+      # - --help
+      - --cors "http://localhost:5432"
+      # --help says this should work, but it doesn't
+      # - --cors "all"
+      - -enableFileUrl
+      - --enableUnsecureFeatures
+      - --includeStack
 
   web:
     build: .
@@ -32,5 +47,6 @@ services:
       - db
       - elasticsearch
       - swiftstack
+      - tika
     links:
       - db:db

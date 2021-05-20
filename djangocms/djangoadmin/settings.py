@@ -27,8 +27,7 @@ SECRET_KEY = 'baoxsiue+$!avor&00-jhuwx-l*ega+r!!f%36!sluo-hryz^s'
 DEBUG = True
 
 # All local hosts
-ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0']
-
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '10.5.0.0', '192.168.49.2']
 
 # Application definition
 
@@ -51,22 +50,27 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',
     'bootstrap4',
     'django_elasticsearch_dsl',
+    'corsheaders',
 
     # Our apps
     'users',
     'homepage',
-    'search'
+    'search',
+    'upload'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'djangoadmin.urls'
 
@@ -95,41 +99,8 @@ AUTHENTICATION_BACKENDS = (
 
 WSGI_APPLICATION = 'djangoadmin.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432,
-    }
-}
-
-# ElasticSearch connection
-ELASTICSEARCH_DSL = {
-    'default': {
-        # elasticserach:9200 is the docker service and port
-        'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
-        # 'hosts':'172.19.0.2:9200'
-    }
-}
-
-
-# SwiftStack connection
-SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
-SWIFT_USER = "test"
-SWIFT_PASSWORD = "test"
-SWIFT_CONTAINER = "container"
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -149,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -162,7 +132,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -189,6 +158,7 @@ gmail = credentials["gmail"]
 google_api = credentials["google_api"]
 
 # Provider specific settings
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
@@ -208,7 +178,8 @@ SOCIALACCOUNT_PROVIDERS = {
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/users/welcome'
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = gmail['username']
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = gmail['username']
@@ -220,18 +191,103 @@ EMAIL_PORT = 587
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}'
+        },
+    },
     'handlers': {
-        'file': {
+        'console': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/djangocms/debug.log',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file'],
+        '*': {
+            'handlers': ['console'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
     },
 }
+
+# ************************************************************************
+# Kubernetes connections *************************************************
+# !IMPORTANT: comment either Kubernetes block or Docker depending of
+# which version are you going to use
+
+# PostgreSQL
+# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+#
+# DATABASES = {
+#      'default': {
+#          'ENGINE': 'django.db.backends.postgresql',
+#          'NAME': 'postgres',
+#          'USER': 'postgres',
+#          'PASSWORD': 'postgres',
+#          'HOST': 'postgres-service',
+#          'PORT': 5432,
+#      }
+#  }
+#
+# # ElasticSearch
+#
+# ELASTICSEARCH_DSL = {
+#      'default': {
+#          'hosts': 'elastic-service:9200'
+#      },
+#  }
+#
+# # SwiftStack
+#
+# SWIFT_AUTH_URL = "http://swift-service:8080/auth/v1.0"
+# SWIFT_USER = "test"
+# SWIFT_PASSWORD = "test"
+# SWIFT_CONTAINER = "container"
+
+# ************************************************************************
+# Docker connections *****************************************************
+# !IMPORTANT: comment either Kubernetes block or Docker depending of
+# which version are you going to use
+
+# PostgreSQL
+# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
+DATABASES = {
+    # SQLite connection
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+    # PostgreSQL connection
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
+    }
+}
+
+# ElasticSearch
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        # elasticserach:9200 is the docker service and port
+       'hosts': os.getenv("ELASTICSEARCH_DSL_HOSTS", 'elasticsearch:9200')
+        # 'hosts':'172.19.0.2:9200'
+    }
+}
+
+# SwiftStack
+
+SWIFT_AUTH_URL = "http://swiftstack:8080/auth/v1.0"
+SWIFT_USER = "test"
+SWIFT_PASSWORD = "test"
+SWIFT_CONTAINER = "container"
+
+# Tika
+
+TIKA_URL = "http://localhost:9998/"

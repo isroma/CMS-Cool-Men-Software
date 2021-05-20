@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-service
+  namespace: cms
+spec:
+  type: ClusterIP
+  selector:
+    app: elastic-container
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-deployment
+  namespace: cms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic-container
+  template:
+    metadata:
+      labels:
+        app: elastic-container
+    spec:
+      containers:
+        - name: elastic-container
+          image: bitnami/elasticsearch
+          ports:
+              - containerPort: 9200

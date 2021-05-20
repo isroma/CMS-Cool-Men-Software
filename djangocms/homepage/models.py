@@ -1,5 +1,6 @@
 from django.db import models
 
+# Create your models here.
 class StorageObject(models.Model):
     prefix = models.CharField(max_length=1024)
     created = models.DateTimeField(auto_now_add=True)
@@ -11,3 +12,4 @@ class StorageObject(models.Model):
 
     def __unicode__(self):
         return u'%s/%s' % (self.container, self.objectname)
+        
