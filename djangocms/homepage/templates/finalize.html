@@ -1,0 +1,12 @@
+{% load static %}
+{% block page_content %}
+
+<html>
+    <body>
+        {% for id in ids %}
+            <a href="{% url 'download' id %}">http://{{ host }}{% url 'download' id %}</a>
+        {% endfor %}
+    </body>
+</html>
+
+{% endblock %}
