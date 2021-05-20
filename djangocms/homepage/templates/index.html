@@ -19,7 +19,58 @@
 	  opacity: 1;
 	  transition: all 0.5s;
 	}
-  
+	.popup .overlay {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(0, 0, 0, 0.7);
+		z-index: 1;
+		display: none;
+	}
+
+	.popup .content {
+		overflow: auto;
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) scale(0);
+		background: #fff;
+		width: 70%;
+		height: 85%;
+		z-index: 2;
+		text-align: center;
+		padding: 20px;
+		box-sizing: border-box;
+		font-family: "Open Sans", sans-serif;
+	}
+
+	.popup .close-btn {
+		cursor: pointer;
+		position: absolute;
+		right: 20px;
+		top: 20px;
+		width: 30px;
+		height: 30px;
+		background: #222;
+		color: #fff;
+		font-size: 25px;
+		font-weight: 600;
+		line-height: 30px;
+		text-align: center;
+		border-radius: 50%;
+	}
+
+	.popup.active .overlay {
+		display: block;
+	}
+
+	.popup.active .content {
+		transition: all 300ms ease-in-out;
+		transform: translate(-50%, -50%) scale(1);
+	}
+
 	.lds-facebook {
 	  display: inline-block;
 	  position: fixed;
@@ -83,7 +134,12 @@
 		background: #464648;
 		color: white;
 	}
-
+	#linkText{
+		margin-left:25px;
+	}
+	#link{
+		margin-left:25px;
+	}
 	.btn-subida:hover {
 	background-color: lightgrey; /* Green */
 	color: white;
@@ -119,11 +175,13 @@
 						<input type="hidden" name="max_file_count" value="{{ max_file_count }}">
 						<input type="hidden" name="expires" value="{{ expires }}">
 						<input type="hidden" name="signature" value="{{ signature }}">
-						<input type="file" class="inpFile" name="inpFile" id="inpFile"><br>
-						{% for role in user_roles %}
-						<input type="radio" name="selected_role" value={{role}} id={{role}}>
-						<label for={{role}}> {{ role }} </label><hr>
-						{% endfor %}
+						<input type="file" class="inpFile" name="inpFile" id="inpFile"><br><br><br>
+						<div style="margin-left: 25px;">
+							{% for role in user_roles %}
+							<input type="radio" name="selected_role" value={{role}} id={{role}}>
+							<label for={{role}}> {{ role }} </label><hr>
+							{% endfor %}
+						</div>
 						<br>
 						<button class="btn-subida" type="submit">Subir archivo</button>
 					</form>
@@ -150,13 +208,12 @@
 						<label for={{role}}> {{ role }} </label>
 						{% endfor %}
 					</form>
-						<div class="user-container">
+						<div class="user-container">	
 							<div id="loader" class="lds-facebook hidden overlay">
 								<div></div>
 								<div></div>
 								<div></div>
-							</div>
-							
+							</div>			
 							<div id="result">
 							</div>
 						</div>
@@ -197,9 +254,6 @@
 		  }
 		}();
 	  
-		function myFunction() {
-			confirm(" ")
-		}
 		function submitSearch() {
 			// Get the checked rol on form
 			const checkboxes = document.querySelectorAll('input[name="selected_role_search"]:checked');
@@ -253,22 +307,39 @@
 					if (json["hits"]["hits"][i]["_source"]["text"] != "") {
 						innerHTML = `
 						<div class="component">
-							<img onclick="myFunction()" src="${type}" alt="Archivo" class="image" >
-							<p value'${json["hits"]["hits"][i]["_source"]["text"]}'></p>
+							<img onclick="togglePopup(${[i]})" src="${type}" alt="Archivo" class="image" >
 							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
 							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
 								Descargar
 							</a>
 						</div>
+						<div class="popup" id="popup-${[i]}">
+							<div class="overlay"></div>
+								<div class="content">
+									<div class="close-btn" onclick="togglePopup(${[i]})">&times;</div>
+									<p style="color: black;white-space: normal !important;word-wrap:break-word;margin: 70px;">${json["hits"]["hits"][i]["_source"]["text"]}</p>
+									</div>
+								</div>
+							</div>		
+						</div>
 						`;
 					} else {
 						innerHTML = `
 						<div class="component">
-							<img src="${type}" alt="Archivo" class="image" >
+							<img onclick="togglePopup(${[i]})" src="${type}" alt="Archivo" class="image" >
 							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
 							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
 								Descargar
 							</a>
+						</div>
+						<div class="popup" id="popup-${[i]}">
+							<div class="overlay"></div>
+								<div class="content">
+									<div class="close-btn" onclick="togglePopup(${[i]})">&times;</div>
+									<p style="color: black;white-space: normal !important;word-wrap:break-word;margin: 70px;">${json["hits"]["hits"][i]["_source"]["text"]}</p>
+									</div>
+								</div>
+							</div>		
 						</div>
 						`;
 					}
@@ -294,6 +365,10 @@
 			}
 	  
 		}
+	
+	function togglePopup(n) {
+		document.getElementById("popup-" + n).classList.toggle("active");
+	}
 
 	const uploadForm = document.getElementById("uploadForm");
     const inpFile = document.getElementById("inpFile");
@@ -380,11 +455,6 @@
                     processData: false,
                     data: formData, // data sent with the get request
 
-                    beforeSend: function () {
-                        $('#result').html('Loading text and metadata...')
-                        $('#result').show();
-                    },
-
                     success: function (responseText, statusText, xhr, $form) {
 
                         tikaText = responseText;
@@ -454,15 +524,13 @@
                                 }, 5000);
                             },
                             complete: function () {
-                                //$("#linkText").html("<b> Link: </b>");
-                                $("#result").html("<br> <b> Text: </b>" + tikaText + "<br><br> <b> Metadata: </b>" + tikaMetadata);
-                                $('#result').show();
+                                alert("Archivo subido :)");
                             },
 
                             // handle a non-successful response
                             error: function (xhr, errmsg, err) {
                                 console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                                $("#result").html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Error</div>')
+                                alert("Error en subida");
                             }
                         });
 
