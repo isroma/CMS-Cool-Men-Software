@@ -26,6 +26,10 @@ from users.models import Role, Profile
 # Create your views here.
 
 def index(request):
+
+    if not request.user.is_authenticated:
+        return redirect('/users/login')
+
     user = Profile.objects.get(user=request.user)
     roles = Role.objects.all()
 

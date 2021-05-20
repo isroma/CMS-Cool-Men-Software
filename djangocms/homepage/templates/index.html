@@ -139,6 +139,11 @@
 	}
 	#link{
 		margin-left:25px;
+		white-space: normal !important;
+		word-wrap:break-word;
+	}
+	#descargarend{
+		margin-left:25px;
 	}
 	.btn-subida:hover {
 	background-color: lightgrey; /* Green */
@@ -191,7 +196,10 @@
 							<span class="progress-bar-text">0%</span>
 						</div>
 					</div>
+					<br>
+					<div id="descargarend">
 			
+					</div>
 					<div id="linkText">
 			
 					</div>
@@ -214,7 +222,7 @@
 								<div></div>
 								<div></div>
 							</div>			
-							<div id="result">
+							<div id="result" style="width: 100%;display: flex;">
 							</div>
 						</div>
 				</div>
@@ -306,7 +314,7 @@
 				for (i = 0; i < json["hits"]["hits"].length; i++) {
 					if (json["hits"]["hits"][i]["_source"]["text"] != "") {
 						innerHTML = `
-						<div class="component">
+						<div class="component" style="margin-right:20px">
 							<img onclick="togglePopup(${[i]})" src="${type}" alt="Archivo" class="image" >
 							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
 							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
@@ -318,6 +326,9 @@
 								<div class="content">
 									<div class="close-btn" onclick="togglePopup(${[i]})">&times;</div>
 									<p style="color: black;white-space: normal !important;word-wrap:break-word;margin: 70px;">${json["hits"]["hits"][i]["_source"]["text"]}</p>
+									<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
+										Descargar
+									</a>
 									</div>
 								</div>
 							</div>		
@@ -325,7 +336,7 @@
 						`;
 					} else {
 						innerHTML = `
-						<div class="component">
+						<div class="component" style="margin-right:20px">
 							<img onclick="togglePopup(${[i]})" src="${type}" alt="Archivo" class="image" >
 							<p> ${json["hits"]["hits"][i]["_source"]["title"]} </p>
 							<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
@@ -337,6 +348,9 @@
 								<div class="content">
 									<div class="close-btn" onclick="togglePopup(${[i]})">&times;</div>
 									<p style="color: black;white-space: normal !important;word-wrap:break-word;margin: 70px;">${json["hits"]["hits"][i]["_source"]["text"]}</p>
+									<a href="${json["hits"]["hits"][i]["_source"]["url"]}">
+										Descargar
+									</a>
 									</div>
 								</div>
 							</div>		
@@ -524,7 +538,7 @@
                                 }, 5000);
                             },
                             complete: function () {
-                                alert("Archivo subido :)");
+                                $("#descargarend").append("Archivo subido correctamente :)");
                             },
 
                             // handle a non-successful response
