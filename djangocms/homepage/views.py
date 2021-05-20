@@ -29,8 +29,48 @@ def index(request):
     user = Profile.objects.get(user=request.user)
     roles = Role.objects.all()
 
+    user = Profile.objects.get(user=request.user)
+    roles = Role.objects.all()
+
+    rol = request.GET.get('rol')
+
+    storage_url, key, auth_token = get_tempurl_key(settings.SWIFT_CONTAINER)
+    storage_url = storage_url.replace("swiftstack", "localhost")
+    prefix = str(uuid.uuid4())
+
+    # Creating dinamically containers according to Django roles
+    (container_url, container_token) = client.get_auth(settings.SWIFT_AUTH_URL, settings.SWIFT_USER, settings.SWIFT_PASSWORD)
+
+    headers = {'X-Container-Meta-Access-Control-Allow-Origin': '*', 'x-container-meta-temp-url-key': key}
+
+    for role in roles:
+        client.put_container(container_url, container_token, str(role))
+        client.post_container(container_url, container_token, str(role), headers)
+
+    # In a real-world scenario you might want to record the prefix in a DB
+    # before displaying the form to keep track of user uploads in case the
+    # finalize() view is not called. Otherwise there will be data on Swift that
+    # is not referenced within your application.
+    # For example, run a periodic job that iterates over unused prefixes and
+    # check Swift if there are unreferenced uploads
+
+    max_file_size = 5*1024*1024*1024
+    max_file_count = 1
+    expires = int(time.time() + 60*60*24*365)
+    swift_url = "%s/%s/%s/" % (storage_url, settings.SWIFT_CONTAINER, prefix)
+    redirect_url = "http://%s%s" % (request.get_host(), reverse(finalize, kwargs={'prefix': prefix, 'container': settings.SWIFT_CONTAINER}))
+    path = urlparse(swift_url).path
+
+    hmac_body = '%s\n%s\n%s\n%s\n%s' % (path, redirect_url, max_file_size, max_file_count, expires)
+    signature = hmac.new(bytearray(key.encode('utf-8')), hmac_body.encode('utf-8'), hashlib.sha1).hexdigest()
+
+    user = Profile.objects.get(user=request.user)
+
     context = {
-        'roles': user.roles.all()
+        'swift_url': swift_url, 'redirect_url': redirect_url,
+        'max_file_size': max_file_size, 'max_file_count': max_file_count,
+        'expires': expires, 'signature': signature, 'user_roles': user.roles.all(),
+        'username': user.user.username, 'roles': user.roles.all()
     }
 
     return render(request, 'index.html', context)
@@ -165,6 +205,9 @@ def download(request, pk):
 
 
 def upload(request):
+    user = Profile.objects.get(user=request.user)
+    roles = Role.objects.all()
+
     rol = request.GET.get('rol')
 
     storage_url, key, auth_token = get_tempurl_key(settings.SWIFT_CONTAINER)
@@ -203,7 +246,7 @@ def upload(request):
         'swift_url': swift_url, 'redirect_url': redirect_url,
         'max_file_size': max_file_size, 'max_file_count': max_file_count,
         'expires': expires, 'signature': signature, 'user_roles': user.roles.all(),
-        'username': user.user.username
+        'username': user.user.username, 'roles': user.roles.all()
     }
 
     return render(request, 'upload.html', context)
